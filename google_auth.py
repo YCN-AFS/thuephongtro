@@ -38,9 +38,8 @@ def login():
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        # Replacing http:// with https:// is important as the external
-        # protocol must be https to match the URI whitelisted
-        redirect_uri=request.base_url.replace("http://", "https://") + "/callback",
+        # Use the exact redirect URL that's registered in Google Cloud Console
+        redirect_uri=DEV_REDIRECT_URL,
         scope=["openid", "email", "profile"],
     )
     return redirect(request_uri)
@@ -54,10 +53,9 @@ def callback():
 
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
-        # Replacing http:// with https:// is important as the external
-        # protocol must be https to match the URI whitelisted
+        # Use the exact redirect URL that's registered in Google Cloud Console
         authorization_response=request.url.replace("http://", "https://"),
-        redirect_url=request.base_url.replace("http://", "https://"),
+        redirect_url=DEV_REDIRECT_URL,
         code=code,
     )
     token_response = requests.post(
