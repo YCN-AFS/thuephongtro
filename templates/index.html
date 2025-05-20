@@ -6,8 +6,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2 text-center">
-                <h1>Find Your Perfect Home in Biên Hòa</h1>
-                <p>Discover the ideal rental property that fits your lifestyle in Đồng Nai's vibrant city.</p>
+                <h1>Tìm Ngôi Nhà Hoàn Hảo Tại Biên Hòa</h1>
+                <p>Khám phá bất động sản cho thuê phù hợp với lối sống của bạn tại thành phố sôi động của Đồng Nai.</p>
             </div>
         </div>
         <div class="row mt-4">
@@ -16,28 +16,28 @@
                     <form action="{{ url_for('search') }}" method="GET" id="search-form">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="district" class="form-label">District</label>
+                                <label for="district" class="form-label">Quận/Huyện</label>
                                 <select class="form-select" id="district" name="district">
-                                    <option value="">All Districts</option>
+                                    <option value="">Tất Cả Quận/Huyện</option>
                                     {% for district, count in districts %}
                                         <option value="{{ district }}">{{ district }} ({{ count }})</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="property_type" class="form-label">Property Type</label>
+                                <label for="property_type" class="form-label">Loại Bất Động Sản</label>
                                 <select class="form-select" id="property_type" name="property_type">
-                                    <option value="">All Types</option>
-                                    <option value="apartment">Apartment</option>
-                                    <option value="house">House</option>
-                                    <option value="room">Room</option>
-                                    <option value="studio">Studio</option>
+                                    <option value="">Tất Cả Loại</option>
+                                    <option value="apartment">Căn Hộ</option>
+                                    <option value="house">Nhà</option>
+                                    <option value="room">Phòng Trọ</option>
+                                    <option value="studio">Căn Hộ Studio</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label for="bedrooms" class="form-label">Bedrooms</label>
+                                <label for="bedrooms" class="form-label">Phòng Ngủ</label>
                                 <select class="form-select" id="bedrooms" name="bedrooms">
-                                    <option value="">Any</option>
+                                    <option value="">Bất Kỳ</option>
                                     <option value="1">1+</option>
                                     <option value="2">2+</option>
                                     <option value="3">3+</option>
@@ -45,19 +45,19 @@
                                 </select>
                             </div>
                             <div class="col-md-8">
-                                <label class="form-label">Price Range (VND)</label>
+                                <label class="form-label">Khoảng Giá (VND)</label>
                                 <div class="row g-2">
                                     <div class="col-6">
-                                        <input type="number" class="form-control" name="min_price" placeholder="Min Price" min="0" step="500000">
+                                        <input type="number" class="form-control" name="min_price" placeholder="Giá Tối Thiểu" min="0" step="500000">
                                     </div>
                                     <div class="col-6">
-                                        <input type="number" class="form-control" name="max_price" placeholder="Max Price" min="0" step="500000">
+                                        <input type="number" class="form-control" name="max_price" placeholder="Giá Tối Đa" min="0" step="500000">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 text-center mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg px-5">
-                                    <i class="fas fa-search me-2"></i> Search
+                                    <i class="fas fa-search me-2"></i> Tìm Kiếm
                                 </button>
                             </div>
                         </div>

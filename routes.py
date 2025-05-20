@@ -14,9 +14,13 @@ from app import app, db
 from models import User, Property, PropertyImage, Favorite, Message, ChatWithAI, UserChat
 from replit_auth import require_login, make_replit_blueprint, current_user, replit
 from ai_assistant import get_ai_response, get_property_recommendations
+from google_auth import google_auth
 
 # Register Replit Auth blueprint
 app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
+
+# Register Google Auth blueprint
+app.register_blueprint(google_auth, url_prefix="/google_login")
 
 # Make session permanent
 @app.before_request

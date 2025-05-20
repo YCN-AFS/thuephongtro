@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BienHoa Rentals - Find Your Perfect Home{% endblock %}</title>
+    <title>{% block title %}BienHoa Rentals - Tìm Nhà Thuê Hoàn Hảo{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -29,18 +29,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">Trang Chủ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('search') %}active{% endif %}" href="{{ url_for('search') }}">Search</a>
+                        <a class="nav-link {% if request.path == url_for('search') %}active{% endif %}" href="{{ url_for('search') }}">Tìm Kiếm</a>
                     </li>
                     {% if user.is_authenticated %}
                         {% if user.user_type == 'landlord' %}
                             <li class="nav-item">
-                                <a class="nav-link {% if request.path == url_for('landlord_dashboard') %}active{% endif %}" href="{{ url_for('landlord_dashboard') }}">Dashboard</a>
+                                <a class="nav-link {% if request.path == url_for('landlord_dashboard') %}active{% endif %}" href="{{ url_for('landlord_dashboard') }}">Bảng Điều Khiển</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if request.path == url_for('create_property') %}active{% endif %}" href="{{ url_for('create_property') }}">Add Property</a>
+                                <a class="nav-link {% if request.path == url_for('create_property') %}active{% endif %}" href="{{ url_for('create_property') }}">Đăng Tin</a>
                             </li>
                         {% endif %}
                     {% endif %}
@@ -54,20 +54,25 @@
                                 {% else %}
                                     <i class="fas fa-user-circle me-2"></i>
                                 {% endif %}
-                                <span>{{ user.first_name or 'User' }}</span>
+                                <span>{{ user.first_name or 'Người dùng' }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">Hồ Sơ</a></li>
                                 {% if user.user_type != 'landlord' %}
-                                    <li><a class="dropdown-item" href="{{ url_for('landlord_dashboard') }}">Become a Landlord</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('landlord_dashboard') }}">Trở Thành Chủ Nhà</a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('replit_auth.logout') }}">Log Out</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('replit_auth.logout') }}">Đăng Xuất</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('replit_auth.login') }}">Log In</a>
+                            <a class="nav-link" href="{{ url_for('replit_auth.login') }}">Đăng Nhập</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('google_auth.login') }}">
+                                <i class="fab fa-google me-1"></i> Đăng nhập Google
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -103,43 +108,43 @@
             <div class="row">
                 <div class="col-md-4">
                     <h5>BienHoa Rentals</h5>
-                    <p>Finding your perfect rental property in Biên Hòa, Đồng Nai, Vietnam.</p>
+                    <p>Tìm kiếm căn nhà cho thuê hoàn hảo tại Biên Hòa, Đồng Nai, Việt Nam.</p>
                 </div>
                 <div class="col-md-2">
-                    <h5>Quick Links</h5>
+                    <h5>Liên Kết Nhanh</h5>
                     <ul>
-                        <li><a href="{{ url_for('index') }}">Home</a></li>
-                        <li><a href="{{ url_for('search') }}">Search</a></li>
+                        <li><a href="{{ url_for('index') }}">Trang Chủ</a></li>
+                        <li><a href="{{ url_for('search') }}">Tìm Kiếm</a></li>
                         {% if user.is_authenticated %}
-                            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                            <li><a href="{{ url_for('profile') }}">Hồ Sơ</a></li>
                             {% if user.user_type == 'landlord' %}
-                                <li><a href="{{ url_for('landlord_dashboard') }}">Dashboard</a></li>
+                                <li><a href="{{ url_for('landlord_dashboard') }}">Bảng Điều Khiển</a></li>
                             {% endif %}
                         {% else %}
-                            <li><a href="{{ url_for('replit_auth.login') }}">Log In</a></li>
+                            <li><a href="{{ url_for('replit_auth.login') }}">Đăng Nhập</a></li>
                         {% endif %}
                     </ul>
                 </div>
                 <div class="col-md-3">
-                    <h5>Property Types</h5>
+                    <h5>Loại Bất Động Sản</h5>
                     <ul>
-                        <li><a href="{{ url_for('search', property_type='apartment') }}">Apartments</a></li>
-                        <li><a href="{{ url_for('search', property_type='house') }}">Houses</a></li>
-                        <li><a href="{{ url_for('search', property_type='room') }}">Rooms</a></li>
-                        <li><a href="{{ url_for('search', property_type='studio') }}">Studio Apartments</a></li>
+                        <li><a href="{{ url_for('search', property_type='apartment') }}">Căn Hộ</a></li>
+                        <li><a href="{{ url_for('search', property_type='house') }}">Nhà</a></li>
+                        <li><a href="{{ url_for('search', property_type='room') }}">Phòng Trọ</a></li>
+                        <li><a href="{{ url_for('search', property_type='studio') }}">Căn Hộ Studio</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
-                    <h5>Contact Us</h5>
+                    <h5>Liên Hệ</h5>
                     <ul>
                         <li><i class="fas fa-envelope me-2"></i> info@bienhoarentals.com</li>
                         <li><i class="fas fa-phone me-2"></i> +84 123 456 789</li>
-                        <li><i class="fas fa-map-marker-alt me-2"></i> Biên Hòa, Đồng Nai, Vietnam</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Biên Hòa, Đồng Nai, Việt Nam</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 BienHoa Rentals. All rights reserved.</p>
+                <p>&copy; 2025 BienHoa Rentals. Tất cả quyền được bảo lưu.</p>
             </div>
         </div>
     </footer>
@@ -151,12 +156,12 @@
         </div>
         <div class="chat-window" id="chat-window" style="display: none;">
             <div class="chat-header">
-                <h5 class="mb-0">AI Rental Assistant</h5>
+                <h5 class="mb-0">Trợ Lý Tìm Nhà Thuê</h5>
                 <button class="close-chat" id="close-chat">&times;</button>
             </div>
             <div class="chat-messages" id="chat-messages"></div>
             <form class="chat-input" id="chat-form">
-                <input type="text" id="chat-input" placeholder="Ask about rentals in Biên Hòa...">
+                <input type="text" id="chat-input" placeholder="Hỏi về nhà thuê ở Biên Hòa...">
                 <button type="submit">
                     <i class="fas fa-paper-plane"></i>
                 </button>
