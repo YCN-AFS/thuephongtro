@@ -232,10 +232,10 @@
                         <div class="col-12 mt-4 text-center">
                             <button type="submit" class="btn btn-primary btn-lg px-5">
                                 <i class="fas {{ 'fa-save' if property else 'fa-plus-circle' }} me-2"></i>
-                                {{ 'Update Property' if property else 'Add Property' }}
+                                {{ 'Cập Nhật Bất Động Sản' if property else 'Thêm Bất Động Sản' }}
                             </button>
                             <a href="{{ url_for('property_details', property_id=property.id) if property else url_for('landlord_dashboard') }}" class="btn btn-outline-secondary btn-lg ms-2">
-                                Cancel
+                                Hủy
                             </a>
                         </div>
                     </div>
