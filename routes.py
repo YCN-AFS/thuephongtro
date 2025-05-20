@@ -318,7 +318,8 @@ def create_property():
                 from flask import current_app
                 
                 # Ensure upload directory exists
-                upload_folder = os.path.join(current_app.static_folder, 'uploads', 'properties', str(new_property.id))
+                static_folder = 'static'  # Flask's default static folder
+                upload_folder = os.path.join(static_folder, 'uploads', 'properties', str(new_property.id))
                 os.makedirs(upload_folder, exist_ok=True)
                 
                 # Save each uploaded file
@@ -415,11 +416,10 @@ def edit_property(property_id):
                 
                 # Add new images
                 for i, image_url in enumerate(images):
-                    property_image = PropertyImage(
-                        property_id=property.id,
-                        url=image_url,
-                        is_primary=(i == 0)  # First image is primary
-                    )
+                    property_image = PropertyImage()
+                    property_image.property_id = property.id
+                    property_image.url = image_url
+                    property_image.is_primary = (i == 0)  # First image is primary
                     db.session.add(property_image)
             
             db.session.commit()
@@ -512,10 +512,9 @@ def toggle_favorite(property_id):
             is_favorite = False
         else:
             # Add to favorites
-            new_favorite = Favorite(
-                user_id=current_user.id,
-                property_id=property_id
-            )
+            new_favorite = Favorite()
+            new_favorite.user_id = current_user.id
+            new_favorite.property_id = property_id
             db.session.add(new_favorite)
             message = 'Property added to favorites'
             is_favorite = True
@@ -613,11 +612,10 @@ def ai_assistant():
             
             # Save the chat to database if user is logged in
             if current_user.is_authenticated:
-                chat_record = ChatWithAI(
-                    user_id=current_user.id,
-                    message=user_message,
-                    response=ai_response
-                )
+                chat_record = ChatWithAI()
+                chat_record.user_id = current_user.id
+                chat_record.message = user_message
+                chat_record.response = ai_response
                 db.session.add(chat_record)
                 db.session.commit()
             
