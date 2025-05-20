@@ -258,54 +258,99 @@ def create_property():
         
         # Create new property
         try:
-            new_property = Property(
-                owner_id=current_user.id,
-                title=request.form.get('title'),
-                description=request.form.get('description'),
-                property_type=request.form.get('property_type'),
-                price=float(request.form.get('price')),
-                address=request.form.get('address'),
-                district=request.form.get('district'),
-                city=request.form.get('city', 'Biên Hòa'),
-                province=request.form.get('province', 'Đồng Nai'),
-                area=float(request.form.get('area')),
-                bedrooms=int(request.form.get('bedrooms')),
-                bathrooms=int(request.form.get('bathrooms')),
-                furnishing=request.form.get('furnishing'),
-                available_from=datetime.strptime(request.form.get('available_from'), '%Y-%m-%d').date(),
-                has_air_conditioning='has_air_conditioning' in request.form,
-                has_parking='has_parking' in request.form,
-                has_wifi='has_wifi' in request.form,
-                has_washing_machine='has_washing_machine' in request.form,
-                has_refrigerator='has_refrigerator' in request.form,
-                has_tv='has_tv' in request.form,
-                has_kitchen='has_kitchen' in request.form,
-                has_balcony='has_balcony' in request.form
-            )
+            # Create a new property instance
+            new_property = Property()
+            new_property.owner_id = current_user.id
+            new_property.title = request.form.get('title', '')
+            new_property.description = request.form.get('description', '')
+            new_property.property_type = request.form.get('property_type', '')
+            
+            # Convert numeric values safely
+            price_str = request.form.get('price', '0')
+            new_property.price = float(price_str) if price_str else 0
+            
+            new_property.address = request.form.get('address', '')
+            new_property.district = request.form.get('district', '')
+            new_property.city = request.form.get('city', 'Biên Hòa')
+            new_property.province = request.form.get('province', 'Đồng Nai')
+            
+            # Convert area safely
+            area_str = request.form.get('area', '0')
+            new_property.area = float(area_str) if area_str else 0
+            
+            # Convert integers safely
+            bedrooms_str = request.form.get('bedrooms', '0')
+            new_property.bedrooms = int(bedrooms_str) if bedrooms_str else 0
+            
+            bathrooms_str = request.form.get('bathrooms', '0')
+            new_property.bathrooms = int(bathrooms_str) if bathrooms_str else 0
+            
+            new_property.furnishing = request.form.get('furnishing', '')
+            
+            # Parse date safely
+            available_from_str = request.form.get('available_from')
+            if available_from_str:
+                new_property.available_from = datetime.strptime(available_from_str, '%Y-%m-%d').date()
+            else:
+                new_property.available_from = datetime.now().date()
+            
+            # Set boolean features
+            new_property.has_air_conditioning = 'has_air_conditioning' in request.form
+            new_property.has_parking = 'has_parking' in request.form
+            new_property.has_wifi = 'has_wifi' in request.form
+            new_property.has_washing_machine = 'has_washing_machine' in request.form
+            new_property.has_refrigerator = 'has_refrigerator' in request.form
+            new_property.has_tv = 'has_tv' in request.form
+            new_property.has_kitchen = 'has_kitchen' in request.form
+            new_property.has_balcony = 'has_balcony' in request.form
             
             db.session.add(new_property)
             db.session.flush()  # To get the property ID
             
             # Handle property images
             images = request.form.getlist('image_urls')
+            uploaded_files = request.files.getlist('property-images')
             
-            # If no images provided, use a default stock image
-            if not images:
-                default_image = PropertyImage(
-                    property_id=new_property.id,
-                    url=STOCK_IMAGES[new_property.id % len(STOCK_IMAGES)],
-                    is_primary=True
-                )
-                db.session.add(default_image)
+            # Process uploaded files
+            if uploaded_files and uploaded_files[0].filename:
+                import os
+                from werkzeug.utils import secure_filename
+                from flask import current_app
+                
+                # Ensure upload directory exists
+                upload_folder = os.path.join(current_app.static_folder, 'uploads', 'properties', str(new_property.id))
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                # Save each uploaded file
+                for file in uploaded_files:
+                    if file and file.filename:
+                        filename = secure_filename(file.filename)
+                        file_path = os.path.join(upload_folder, filename)
+                        file.save(file_path)
+                        
+                        # Create database record for the image
+                        image = PropertyImage()
+                        image.property_id = new_property.id
+                        image.url = f'/static/uploads/properties/{new_property.id}/{filename}'
+                        image.is_primary = (file == uploaded_files[0])  # First image is primary
+                        db.session.add(image)
+            
+            # If no images uploaded but URLs provided (stock images)
+            elif images:
+                for i, url in enumerate(images):
+                    image = PropertyImage()
+                    image.property_id = new_property.id
+                    image.url = url
+                    image.is_primary = (i == 0)  # First image is primary
+                    db.session.add(image)
+            
+            # If no images provided at all, use a default stock image
             else:
-                # Add provided images
-                for i, image_url in enumerate(images):
-                    property_image = PropertyImage(
-                        property_id=new_property.id,
-                        url=image_url,
-                        is_primary=(i == 0)  # First image is primary
-                    )
-                    db.session.add(property_image)
+                default_image = PropertyImage()
+                default_image.property_id = new_property.id
+                default_image.url = 'static/img/properties/default-property.jpg'
+                default_image.is_primary = True
+                db.session.add(default_image)
             
             db.session.commit()
             flash('Property created successfully!', 'success')
