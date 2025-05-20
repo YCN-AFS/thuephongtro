@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BienHoa Rentals - Find Your Perfect Home{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-home"></i> BienHoa Rentals
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('search') %}active{% endif %}" href="{{ url_for('search') }}">Search</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'landlord' %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('landlord_dashboard') %}active{% endif %}" href="{{ url_for('landlord_dashboard') }}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == url_for('create_property') %}active{% endif %}" href="{{ url_for('create_property') }}">Add Property</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                {% if user.profile_image_url %}
+                                    <img src="{{ user.profile_image_url }}" alt="{{ user.first_name or 'User' }}" class="user-avatar me-2">
+                                {% else %}
+                                    <i class="fas fa-user-circle me-2"></i>
+                                {% endif %}
+                                <span>{{ user.first_name or 'User' }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                                {% if user.user_type != 'landlord' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('landlord_dashboard') }}">Become a Landlord</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('replit_auth.logout') }}">Log Out</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('replit_auth.login') }}">Log In</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="toast-container">
+                {% for category, message in messages %}
+                    <div class="toast flash-message" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-{{ category if category != 'message' else 'info' }} text-white">
+                            <strong class="me-auto">{{ 'Success' if category == 'success' else 'Error' if category == 'danger' else 'Info' }}</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>BienHoa Rentals</h5>
+                    <p>Finding your perfect rental property in Biên Hòa, Đồng Nai, Vietnam.</p>
+                </div>
+                <div class="col-md-2">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('search') }}">Search</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                            {% if user.user_type == 'landlord' %}
+                                <li><a href="{{ url_for('landlord_dashboard') }}">Dashboard</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{{ url_for('replit_auth.login') }}">Log In</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Property Types</h5>
+                    <ul>
+                        <li><a href="{{ url_for('search', property_type='apartment') }}">Apartments</a></li>
+                        <li><a href="{{ url_for('search', property_type='house') }}">Houses</a></li>
+                        <li><a href="{{ url_for('search', property_type='room') }}">Rooms</a></li>
+                        <li><a href="{{ url_for('search', property_type='studio') }}">Studio Apartments</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact Us</h5>
+                    <ul>
+                        <li><i class="fas fa-envelope me-2"></i> info@bienhoarentals.com</li>
+                        <li><i class="fas fa-phone me-2"></i> +84 123 456 789</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Biên Hòa, Đồng Nai, Vietnam</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 BienHoa Rentals. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <div class="chat-widget">
+        <div class="chat-button" id="chat-button">
+            <i class="fas fa-comment-dots fa-lg"></i>
+        </div>
+        <div class="chat-window" id="chat-window" style="display: none;">
+            <div class="chat-header">
+                <h5 class="mb-0">AI Rental Assistant</h5>
+                <button class="close-chat" id="close-chat">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <form class="chat-input" id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask about rentals in Biên Hòa...">
+                <button type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,251 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ 'Edit Property' if property else 'Add New Property' }} - BienHoa Rentals{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="form-container">
+                <div class="mb-4">
+                    <h1>{{ 'Edit Property' if property else 'Add New Property' }}</h1>
+                    <p class="text-muted">{{ 'Update your property details' if property else 'List your property for rent in Biên Hòa' }}</p>
+                </div>
+                
+                <form id="property-form" method="POST" action="{{ url_for('edit_property', property_id=property.id) if property else url_for('create_property') }}">
+                    <div class="row g-3">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <h3>Basic Information</h3>
+                            <hr>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="title" class="form-label">Property Title*</label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                value="{{ property.title or '' }}" placeholder="e.g. Modern Apartment in Biên Hòa Center">
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="description" class="form-label">Description*</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required
+                                placeholder="Provide a detailed description of your property">{{ property.description or '' }}</textarea>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="property_type" class="form-label">Property Type*</label>
+                            <select class="form-select" id="property_type" name="property_type" required>
+                                <option value="" disabled {{ 'selected' if not property }}>Select property type</option>
+                                <option value="apartment" {{ 'selected' if property and property.property_type == 'apartment' }}>Apartment</option>
+                                <option value="house" {{ 'selected' if property and property.property_type == 'house' }}>House</option>
+                                <option value="room" {{ 'selected' if property and property.property_type == 'room' }}>Room</option>
+                                <option value="studio" {{ 'selected' if property and property.property_type == 'studio' }}>Studio</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="price" class="form-label">Monthly Rent (VND)*</label>
+                            <input type="number" class="form-control" id="price" name="price" required
+                                value="{{ property.price or '' }}" placeholder="e.g. 5000000" step="100000" min="0">
+                        </div>
+                        
+                        <!-- Location Information -->
+                        <div class="col-12 mt-4">
+                            <h3>Location</h3>
+                            <hr>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="address" class="form-label">Address*</label>
+                            <input type="text" class="form-control" id="address" name="address" required
+                                value="{{ property.address or '' }}" placeholder="Full street address">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="district" class="form-label">District*</label>
+                            <input type="text" class="form-control" id="district" name="district" required
+                                value="{{ property.district or '' }}" placeholder="e.g. Tân Mai">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city"
+                                value="{{ property.city or 'Biên Hòa' }}" placeholder="Biên Hòa">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="province" class="form-label">Province</label>
+                            <input type="text" class="form-control" id="province" name="province"
+                                value="{{ property.province or 'Đồng Nai' }}" placeholder="Đồng Nai">
+                        </div>
+                        
+                        <!-- Property Details -->
+                        <div class="col-12 mt-4">
+                            <h3>Property Details</h3>
+                            <hr>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="area" class="form-label">Area (m²)*</label>
+                            <input type="number" class="form-control" id="area" name="area" required
+                                value="{{ property.area or '' }}" placeholder="e.g. 50" step="0.01" min="0">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="bedrooms" class="form-label">Bedrooms*</label>
+                            <input type="number" class="form-control" id="bedrooms" name="bedrooms" required
+                                value="{{ property.bedrooms or '' }}" placeholder="e.g. 2" min="0">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="bathrooms" class="form-label">Bathrooms*</label>
+                            <input type="number" class="form-control" id="bathrooms" name="bathrooms" required
+                                value="{{ property.bathrooms or '' }}" placeholder="e.g. 1" min="0">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="furnishing" class="form-label">Furnishing</label>
+                            <select class="form-select" id="furnishing" name="furnishing">
+                                <option value="" {{ 'selected' if not property or not property.furnishing }}>Not specified</option>
+                                <option value="unfurnished" {{ 'selected' if property and property.furnishing == 'unfurnished' }}>Unfurnished</option>
+                                <option value="semi-furnished" {{ 'selected' if property and property.furnishing == 'semi-furnished' }}>Semi-furnished</option>
+                                <option value="fully-furnished" {{ 'selected' if property and property.furnishing == 'fully-furnished' }}>Fully furnished</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="available_from" class="form-label">Available From*</label>
+                            <input type="date" class="form-control datepicker" id="available_from" name="available_from" required
+                                value="{{ property.available_from.strftime('%Y-%m-%d') if property and property.available_from else '' }}">
+                        </div>
+                        
+                        {% if property %}
+                        <div class="col-md-12">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="is_available" name="is_available" 
+                                    {{ 'checked' if property and property.is_available else '' }}>
+                                <label class="form-check-label" for="is_available">Property is available for rent</label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Amenities -->
+                        <div class="col-12 mt-4">
+                            <h3>Amenities</h3>
+                            <hr>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_air_conditioning" name="has_air_conditioning"
+                                            {{ 'checked' if property and property.has_air_conditioning else '' }}>
+                                        <label class="form-check-label" for="has_air_conditioning">Air Conditioning</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_parking" name="has_parking"
+                                            {{ 'checked' if property and property.has_parking else '' }}>
+                                        <label class="form-check-label" for="has_parking">Parking</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_wifi" name="has_wifi"
+                                            {{ 'checked' if property and property.has_wifi else '' }}>
+                                        <label class="form-check-label" for="has_wifi">WiFi</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_washing_machine" name="has_washing_machine"
+                                            {{ 'checked' if property and property.has_washing_machine else '' }}>
+                                        <label class="form-check-label" for="has_washing_machine">Washing Machine</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_refrigerator" name="has_refrigerator"
+                                            {{ 'checked' if property and property.has_refrigerator else '' }}>
+                                        <label class="form-check-label" for="has_refrigerator">Refrigerator</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_tv" name="has_tv"
+                                            {{ 'checked' if property and property.has_tv else '' }}>
+                                        <label class="form-check-label" for="has_tv">TV</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_kitchen" name="has_kitchen"
+                                            {{ 'checked' if property and property.has_kitchen else '' }}>
+                                        <label class="form-check-label" for="has_kitchen">Kitchen</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="has_balcony" name="has_balcony"
+                                            {{ 'checked' if property and property.has_balcony else '' }}>
+                                        <label class="form-check-label" for="has_balcony">Balcony</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Property Images -->
+                        <div class="col-12 mt-4">
+                            <h3>Property Images</h3>
+                            <hr>
+                            <p class="text-muted">Select at least one image for your property listing. The first selected image will be the primary image.</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Selected: <span id="selected-images-count">0</span> images</span>
+                                <div id="image-error" class="text-danger" style="display: none;"></div>
+                            </div>
+                            
+                            <div id="image-selection-container">
+                                <div class="image-selection-grid">
+                                    {% for image_url in stock_images %}
+                                    <div class="image-item {{ 'selected' if property and image_url in [img.url for img in property.images] }}" data-image-url="{{ image_url }}">
+                                        <img src="{{ image_url }}" alt="Property Image" class="img-fluid">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            {% if property and property.images %}
+                            <div class="mt-4">
+                                <h5>Current Images</h5>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    {% for image in property.images %}
+                                    <div class="border rounded p-1" style="width: 100px; height: 100px;">
+                                        <img src="{{ image.url }}" alt="Current property image" class="img-fluid h-100 w-100 object-fit-cover">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="col-12 mt-4 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas {{ 'fa-save' if property else 'fa-plus-circle' }} me-2"></i>
+                                {{ 'Update Property' if property else 'Add Property' }}
+                            </button>
+                            <a href="{{ url_for('property_details', property_id=property.id) if property else url_for('landlord_dashboard') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/property.js') }}"></script>
+{% endblock %}
