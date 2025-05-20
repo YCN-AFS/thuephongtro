@@ -231,6 +231,129 @@
                              data-longitude="{{ property.longitude if property.longitude else 106.82 }}"
                              data-property-title="{{ property.title }}"></div>
                     </div>
+                    
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="mb-0">Đánh giá & Nhận xét</h3>
+                            <a href="{{ url_for('property_reviews', property_id=property.id) }}" class="text-decoration-none">
+                                Xem tất cả <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+
+                        <!-- Average rating overview -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4">
+                                        <span class="display-4 fw-bold">{{ property.average_rating() }}</span>
+                                        <span class="text-muted">/5</span>
+                                    </div>
+                                    <div>
+                                        <div class="stars-container mb-2">
+                                            {% for i in range(5) %}
+                                                {% if i < property.average_rating()|int %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% elif property.average_rating() - i > 0 and property.average_rating() - i < 1 %}
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-warning"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-muted mb-0">{{ property.rating_count() }} đánh giá</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review list -->
+                        {% if reviews %}
+                            <div class="reviews-list">
+                                {% for review in reviews %}
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="avatar me-3">
+                                                        {% if review.reviewer.profile_image_url %}
+                                                            <img src="{{ review.reviewer.profile_image_url }}" alt="Avatar" class="rounded-circle" width="40" height="40">
+                                                        {% else %}
+                                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                {{ review.reviewer.first_name[0] if review.reviewer.first_name else review.reviewer.id[0] }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ review.reviewer.first_name if review.reviewer.first_name else 'Người dùng' }}</h6>
+                                                        <small class="text-muted">{{ review.created_at.strftime('%d/%m/%Y') }}</small>
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if user.is_authenticated and user.id == review.reviewer_id %}
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ url_for('add_review', property_id=property.id) }}">
+                                                                    <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form action="{{ url_for('delete_review', property_id=property.id, review_id=review.id) }}" method="POST" class="d-inline">
+                                                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')">
+                                                                        <i class="fas fa-trash-alt me-2"></i>Xóa
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="rating mb-2">
+                                                {% for i in range(5) %}
+                                                    {% if i < review.rating %}
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-warning"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            
+                                            {% if review.comment %}
+                                                <p class="review-text mb-0">{{ review.comment }}</p>
+                                            {% else %}
+                                                <p class="text-muted fst-italic mb-0">Không có nhận xét.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Chưa có đánh giá nào cho bất động sản này.
+                            </div>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            {% if user_review %}
+                                <a href="{{ url_for('add_review', property_id=property.id) }}" class="btn btn-outline-primary mt-3">
+                                    <i class="fas fa-edit me-2"></i>Chỉnh sửa đánh giá của bạn
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('add_review', property_id=property.id) }}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-star me-2"></i>Viết đánh giá
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-secondary mt-3">
+                                <i class="fas fa-user-lock me-2"></i>Vui lòng <a href="{{ url_for('replit_auth.login') }}">đăng nhập</a> để viết đánh giá.
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             
