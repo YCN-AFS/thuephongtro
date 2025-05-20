@@ -24,22 +24,22 @@
         <div class="card-body">
           <div class="d-flex align-items-center">
             <div class="me-4">
-              <span class="display-4 fw-bold">{{ property.average_rating() }}</span>
+              <span class="display-4 fw-bold">{{ property.average_rating }}</span>
               <span class="text-muted">/5</span>
             </div>
             <div>
               <div class="stars-container mb-2">
                 {% for i in range(5) %}
-                  {% if i < property.average_rating()|int %}
+                  {% if i < property.average_rating|int %}
                     <i class="fas fa-star text-warning"></i>
-                  {% elif property.average_rating() - i > 0 and property.average_rating() - i < 1 %}
+                  {% elif property.average_rating - i > 0 and property.average_rating - i < 1 %}
                     <i class="fas fa-star-half-alt text-warning"></i>
                   {% else %}
                     <i class="far fa-star text-warning"></i>
                   {% endif %}
                 {% endfor %}
               </div>
-              <p class="text-muted mb-0">{{ property.rating_count() }} đánh giá</p>
+              <p class="text-muted mb-0">{{ property.rating_count }} đánh giá</p>
             </div>
           </div>
         </div>
