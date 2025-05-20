@@ -1,0 +1,117 @@
+INFO:root:Database tables created
+To make Google authentication work:
+1. Go to https://console.cloud.google.com/apis/credentials
+2. Create a new OAuth 2.0 Client ID
+3. Add https://188f3824-8f8e-4b6f-837f-aa0a3eacf478-00-14n2q3spwc1e4.riker.replit.dev/google_login/callback to Authorized redirect URIs
+
+For detailed instructions, see:
+https://docs.replit.com/additional-resources/google-auth-in-flask#set-up-your-oauth-app--client
+
+ERROR:app:Exception on /property/new [GET]
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/replit_auth.py", line 183, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes.py", line 233, in create_property
+    return render_template('property_form.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/workspace/templates/property_form.html", line 210, in template
+    <div class="image-item {% if property and property.images and image_url in [img.url for img in property.images] %}selected{% endif %}" data-image-url="{{ image_url }}">
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.TemplateSyntaxError: expected token ',', got 'for'
+DEBUG:flask_dance.consumer.oauth2:client_id = 188f3824-8f8e-4b6f-837f-aa0a3eacf478
+DEBUG:flask_dance.consumer.oauth2:code_verifier = GWNFmUP37gZtEfytoZYaC749mQJoDLq2346vrYqbTbUARQBa
+DEBUG:requests_oauthlib.oauth2_session:Generated new state FyxwBGlgQTqtXYCT8gfc1CRtsxagLx.
+DEBUG:flask_dance.consumer.oauth2:state = FyxwBGlgQTqtXYCT8gfc1CRtsxagLx
+DEBUG:flask_dance.consumer.oauth2:redirect URL = https://replit.com/oidc/auth?response_type=code&client_id=188f3824-8f8e-4b6f-837f-aa0a3eacf478&redirect_uri=https%3A%2F%2F188f3824-8f8e-4b6f-837f-aa0a3eacf478-00-14n2q3spwc1e4.riker.replit.dev%2Fauth%2Freplit_auth%2Fauthorized&scope=openid+profile+email+offline_access&state=FyxwBGlgQTqtXYCT8gfc1CRtsxagLx&code_challenge=8wg2Gx8yXYuvTj3-K_uxR_Ng2f6M4-3T67ULz6x8Dk4&code_challenge_method=S256&prompt=login+consent
+DEBUG:flask_dance.consumer.oauth2:next_url = /
+DEBUG:flask_dance.consumer.oauth2:state = FyxwBGlgQTqtXYCT8gfc1CRtsxagLx
+DEBUG:flask_dance.consumer.oauth2:code_verifier = GWNFmUP37gZtEfytoZYaC749mQJoDLq2346vrYqbTbUARQBa
+DEBUG:flask_dance.consumer.oauth2:client_id = 188f3824-8f8e-4b6f-837f-aa0a3eacf478
+DEBUG:flask_dance.consumer.oauth2:client_secret = None
+DEBUG:requests_oauthlib.oauth2_session:Requesting url https://replit.com/oidc/token using method POST.
+DEBUG:requests_oauthlib.oauth2_session:Supplying headers {'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded'} and data {'grant_type': 'authorization_code', 'client_id': '188f3824-8f8e-4b6f-837f-aa0a3eacf478', 'code_verifier': 'GWNFmUP37gZtEfytoZYaC749mQJoDLq2346vrYqbTbUARQBa', 'code': 't1wn5uFzawunkOWOFybU6xDR-_XcePLw065JVhcauSw', 'redirect_uri': 'https://188f3824-8f8e-4b6f-837f-aa0a3eacf478-00-14n2q3spwc1e4.riker.replit.dev/auth/replit_auth/authorized'}
+DEBUG:requests_oauthlib.oauth2_session:Passing through key word arguments {'timeout': None, 'auth': (), 'verify': None, 'proxies': None, 'cert': None}.
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): replit.com:443
+DEBUG:urllib3.connectionpool:https://replit.com:443 "POST /oidc/token HTTP/1.1" 200 None
+DEBUG:requests_oauthlib.oauth2_session:Request to fetch token completed with status 200.
+DEBUG:requests_oauthlib.oauth2_session:Request url was https://replit.com/oidc/token
+DEBUG:requests_oauthlib.oauth2_session:Request headers were {'User-Agent': 'python-requests/2.32.3', 'Accept-Encoding': 'gzip, deflate', 'Accept': 'application/json', 'Connection': 'keep-alive', 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': '320'}
+DEBUG:requests_oauthlib.oauth2_session:Request body was grant_type=authorization_code&client_id=188f3824-8f8e-4b6f-837f-aa0a3eacf478&code_verifier=GWNFmUP37gZtEfytoZYaC749mQJoDLq2346vrYqbTbUARQBa&code=t1wn5uFzawunkOWOFybU6xDR-_XcePLw065JVhcauSw&redirect_uri=https%3A%2F%2F188f3824-8f8e-4b6f-837f-aa0a3eacf478-00-14n2q3spwc1e4.riker.replit.dev%2Fauth%2Freplit_auth%2Fauthorized
+DEBUG:requests_oauthlib.oauth2_session:Response headers were {'Date': 'Tue, 20 May 2025 08:54:11 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Powered-By': 'Express', 'cache-control': 'no-store', 'Content-Security-Policy': "frame-ancestors 'self' https://*.replit.dev", 'Vary': 'Origin, Accept-Encoding', 'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'WWW-Authenticate', 'Strict-Transport-Security': 'max-age=31536000; preload', 'cf-cache-status': 'DYNAMIC', 'Set-Cookie': '__cf_bm=GQpESDYwA7N6shuMCUbo2WT86T3Iod.q8LV8K8l1KS0-1747731251-1.0.1.1-kEuDjAMVCqQvo2wRQ_sdodJxDF9Xc6PeQNoNFmR0VzIfB8NoIXzgG2qUO9ClvKXSfGHgL0d2Cgiug3Ub9kQlFCz1LxWO6t2_pwWyWuz1RRE; path=/; expires=Tue, 20-May-25 09:24:11 GMT; domain=.replit.com; HttpOnly; Secure; SameSite=None', 'Server': 'cloudflare', 'CF-RAY': '942a9ba399686160-ORD', 'Content-Encoding': 'gzip', 'alt-svc': 'h3=":443"; ma=86400'} and content {"access_token":"hRsJv76qaFrdHzYehGk1LbgNFapImW4EEMF6N4wxOIU","expires_in":3600,"id_token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJzdWIiOiI0MDAwMzI1NiIsInVzZXJuYW1lIjoieWNuZm94Y29kZSIsImZpcnN0X25hbWUiOiJGb3giLCJsYXN0X25hbWUiOiJDb2RlIiwiZW1haWwiOiJ5Y24uZm94Y29kZUBnbWFpbC5jb20iLCJhdXRoX3RpbWUiOjE3NDc3MzEyNTEsImF0X2hhc2giOiJEb2JWMEs2RlV4OTBUS21waElXTGpnIiwiYXVkIjoiMTg4ZjM4MjQtOGY4ZS00YjZmLTgzN2YtYWEwYTNlYWNmNDc4IiwiZXhwIjoxNzQ3NzM0ODUxLCJpYXQiOjE3NDc3MzEyNTEsImlzcyI6Imh0dHBzOi8vcmVwbGl0LmNvbS9vaWRjIn0.idozTnMaCLk4-vOr6O5qWVfXL-49iu4ODereXhFAvmyqyWV5cpp8BS3uKvUZ_gPBECNGtotY7Y8FJbtheJpDjUXuGvQd7-qDa0pYkNL3GSlZH0THiNeriiyzaHD7VxiDujuMA1cAPbEoqHX19Azy-ePveKsFfe1BgpYpCefpSsHJbjvB1bRrwki0an8wtJTcMu50uISM4KPSZOC2Gf7F8wGlpSmj3JKMzw8Vb7gBYjn6bZthAFKqdBLlsqRWLBX4_Dgt0ZVc24PlhnOJtJNBVMbwB1lUNAmuTaruZSLR_RmrBcKCueQtd9KKlIjkICqK4QsEN7H5CoADLvCw6h0KMA","refresh_token":"ANRYWK5qfeJbOBd_PF0OhfJSKbLyD3Rvl2NK78cUSzh","scope":"openid profile email offline_access","token_type":"Bearer"}.
+DEBUG:requests_oauthlib.oauth2_session:Invoking 0 token response hooks.
+DEBUG:requests_oauthlib.oauth2_session:Obtained token {'access_token': 'hRsJv76qaFrdHzYehGk1LbgNFapImW4EEMF6N4wxOIU', 'expires_in': 3600, 'id_token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlZmF1bHQifQ.eyJzdWIiOiI0MDAwMzI1NiIsInVzZXJuYW1lIjoieWNuZm94Y29kZSIsImZpcnN0X25hbWUiOiJGb3giLCJsYXN0X25hbWUiOiJDb2RlIiwiZW1haWwiOiJ5Y24uZm94Y29kZUBnbWFpbC5jb20iLCJhdXRoX3RpbWUiOjE3NDc3MzEyNTEsImF0X2hhc2giOiJEb2JWMEs2RlV4OTBUS21waElXTGpnIiwiYXVkIjoiMTg4ZjM4MjQtOGY4ZS00YjZmLTgzN2YtYWEwYTNlYWNmNDc4IiwiZXhwIjoxNzQ3NzM0ODUxLCJpYXQiOjE3NDc3MzEyNTEsImlzcyI6Imh0dHBzOi8vcmVwbGl0LmNvbS9vaWRjIn0.idozTnMaCLk4-vOr6O5qWVfXL-49iu4ODereXhFAvmyqyWV5cpp8BS3uKvUZ_gPBECNGtotY7Y8FJbtheJpDjUXuGvQd7-qDa0pYkNL3GSlZH0THiNeriiyzaHD7VxiDujuMA1cAPbEoqHX19Azy-ePveKsFfe1BgpYpCefpSsHJbjvB1bRrwki0an8wtJTcMu50uISM4KPSZOC2Gf7F8wGlpSmj3JKMzw8Vb7gBYjn6bZthAFKqdBLlsqRWLBX4_Dgt0ZVc24PlhnOJtJNBVMbwB1lUNAmuTaruZSLR_RmrBcKCueQtd9KKlIjkICqK4QsEN7H5CoADLvCw6h0KMA', 'refresh_token': 'ANRYWK5qfeJbOBd_PF0OhfJSKbLyD3Rvl2NK78cUSzh', 'scope': ['openid', 'profile', 'email', 'offline_access'], 'token_type': 'Bearer', 'expires_at': 1747734851.8448832}.
+ERROR:app:Exception on /property/new [GET]
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/replit_auth.py", line 183, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes.py", line 233, in create_property
+    return render_template('property_form.html',
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/workspace/templates/property_form.html", line 210, in template
+    <div class="image-item {% if property and property.images and image_url in [img.url for img in property.images] %}selected{% endif %}" data-image-url="{{ image_url }}">
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.TemplateSyntaxError: expected token ',', got 'for'

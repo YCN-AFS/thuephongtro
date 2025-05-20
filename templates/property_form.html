@@ -207,7 +207,7 @@
                             <div id="image-selection-container">
                                 <div class="image-selection-grid">
                                     {% for image_url in stock_images %}
-                                    <div class="image-item {% if property and property.images and image_url in [img.url for img in property.images] %}selected{% endif %}" data-image-url="{{ image_url }}">
+                                    <div class="image-item" data-image-url="{{ image_url }}">
                                         <img src="{{ image_url }}" alt="Hình ảnh bất động sản" class="img-fluid">
                                     </div>
                                     {% endfor %}
