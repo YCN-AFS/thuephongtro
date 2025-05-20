@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize stock image selection
     initImageSelection();
+    
+    // Initialize image upload functionality
+    initImageUpload();
   }
   
   // Delete property confirmation
@@ -26,6 +29,19 @@ document.addEventListener('DOMContentLoaded', function() {
   availabilityToggles.forEach(toggle => {
     toggle.addEventListener('change', togglePropertyAvailability);
   });
+  
+  // Toggle stock images section
+  const useStockImages = document.getElementById('use-stock-images');
+  if (useStockImages) {
+    useStockImages.addEventListener('change', function() {
+      const stockImagesContainer = document.querySelector('.stock-images-container');
+      if (this.checked) {
+        stockImagesContainer.style.display = 'block';
+      } else {
+        stockImagesContainer.style.display = 'none';
+      }
+    });
+  }
   
   // Initialize property image carousel
   const propertyCarousel = document.getElementById('property-carousel');

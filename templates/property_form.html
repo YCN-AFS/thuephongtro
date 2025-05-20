@@ -12,7 +12,7 @@
                     <p class="text-muted">{{ 'Cập nhật thông tin bất động sản của bạn' if property else 'Đăng tin bất động sản cho thuê tại Biên Hòa' }}</p>
                 </div>
                 
-                <form id="property-form" method="POST" action="{{ url_for('edit_property', property_id=property.id) if property else url_for('create_property') }}">
+                <form id="property-form" method="POST" action="{{ url_for('edit_property', property_id=property.id) if property else url_for('create_property') }}" enctype="multipart/form-data">
                     <div class="row g-3">
                         <!-- Basic Information -->
                         <div class="col-12">
@@ -197,32 +197,78 @@
                         <div class="col-12 mt-4">
                             <h3>Hình Ảnh Bất Động Sản</h3>
                             <hr>
-                            <p class="text-muted">Chọn ít nhất một hình ảnh cho tin đăng. Hình ảnh đầu tiên sẽ là hình ảnh chính.</p>
+                            <p class="text-muted">Tải lên hoặc chọn ít nhất một hình ảnh cho tin đăng. Hình ảnh đầu tiên sẽ là hình ảnh chính.</p>
                             
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span>Đã chọn: <span id="selected-images-count">0</span> hình ảnh</span>
-                                <div id="image-error" class="text-danger" style="display: none;"></div>
+                            <!-- Image Upload Section -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">Tải Lên Hình Ảnh</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="property-images" class="form-label">Chọn hình ảnh từ thiết bị của bạn (JPG, PNG, JPEG - tối đa 5MB/hình):</label>
+                                        <input class="form-control" type="file" id="property-images" name="property-images" multiple accept=".jpg,.jpeg,.png" onchange="previewImages(this)">
+                                    </div>
+                                    
+                                    <div id="image-preview-container" class="d-flex flex-wrap gap-2 mb-3">
+                                        <!-- Image previews will be added here -->
+                                    </div>
+                                    
+                                    <div id="upload-error" class="text-danger mt-2" style="display: none;"></div>
+                                    
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <span>Hình ảnh đầu tiên sẽ được hiển thị làm hình ảnh chính. Bạn có thể kéo thả để thay đổi thứ tự hình ảnh.</span>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div id="image-selection-container">
-                                <div class="image-selection-grid">
-                                    {% for image_url in stock_images %}
-                                    <div class="image-item" data-image-url="{{ image_url }}">
-                                        <img src="{{ image_url }}" alt="Hình ảnh bất động sản" class="img-fluid">
+                            <!-- Stock Images Section -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="use-stock-images" name="use-stock-images">
+                                        <label class="form-check-label" for="use-stock-images">
+                                            <h5 class="mb-0">Hoặc chọn từ thư viện hình ảnh có sẵn</h5>
+                                        </label>
                                     </div>
-                                    {% endfor %}
+                                </div>
+                                <div class="card-body stock-images-container" style="display: none;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span>Đã chọn: <span id="selected-images-count">0</span> hình ảnh</span>
+                                        <div id="image-error" class="text-danger" style="display: none;"></div>
+                                    </div>
+                                    
+                                    <div id="image-selection-container">
+                                        <div class="image-selection-grid">
+                                            {% for image_url in stock_images %}
+                                            <div class="image-item" data-image-url="{{ image_url }}">
+                                                <img src="{{ image_url }}" alt="Hình ảnh bất động sản" class="img-fluid">
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             {% if property and property.images %}
-                            <div class="mt-4">
-                                <h5>Hình Ảnh Hiện Tại</h5>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    {% for image in property.images %}
-                                    <div class="border rounded p-1" style="width: 100px; height: 100px;">
-                                        <img src="{{ image.url }}" alt="Hình ảnh bất động sản hiện tại" class="img-fluid h-100 w-100 object-fit-cover">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Hình Ảnh Hiện Tại</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        {% for image in property.images %}
+                                        <div class="border rounded p-1 position-relative" style="width: 120px; height: 120px;">
+                                            <img src="{{ image.url }}" alt="Hình ảnh bất động sản hiện tại" class="img-fluid h-100 w-100 object-fit-cover">
+                                            <div class="position-absolute top-0 end-0 p-1">
+                                                <span class="badge {{ 'bg-success' if image.is_primary else 'bg-secondary' }}">
+                                                    {{ 'Chính' if image.is_primary else '' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
                             </div>
                             {% endif %}
