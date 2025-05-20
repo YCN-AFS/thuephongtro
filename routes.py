@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import logging
 
 from app import app, db
-from models import User, Property, PropertyImage, Favorite, Message, ChatWithAI, UserChat
+from models import User, Property, PropertyImage, Favorite, Message, ChatWithAI, UserChat, Review
 from replit_auth import require_login, make_replit_blueprint, current_user, replit
 from ai_assistant import get_ai_response, get_property_recommendations
 from google_auth import google_auth

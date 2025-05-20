@@ -79,6 +79,19 @@ class Property(db.Model):
     # Relationships
     images = db.relationship('PropertyImage', backref='property', lazy=True, cascade="all, delete-orphan")
     favorites = db.relationship('Favorite', backref='property', lazy=True, cascade="all, delete-orphan")
+    # reviews relationship is added by the Review model with backref
+    
+    @property
+    def average_rating(self):
+        """Calculate average rating for this property"""
+        if not self.reviews or len(self.reviews) == 0:
+            return 0
+        return round(sum(review.rating for review in self.reviews) / len(self.reviews), 1)
+    
+    @property
+    def rating_count(self):
+        """Get the number of ratings for this property"""
+        return len(self.reviews) if self.reviews else 0
     
     def to_dict(self):
         """Convert property to dictionary format for API responses"""
@@ -114,6 +127,10 @@ class Property(db.Model):
                 'tv': self.has_tv,
                 'kitchen': self.has_kitchen,
                 'balcony': self.has_balcony
+            },
+            'ratings': {
+                'average': self.average_rating,
+                'count': self.rating_count
             },
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
@@ -183,3 +200,17 @@ class ChatWithAI(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     
     user = db.relationship('User', foreign_keys=[user_id])
+    
+    
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
+    reviewer_id = db.Column(db.String, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    comment = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    property = db.relationship('Property', backref=db.backref('reviews', lazy=True, cascade="all, delete-orphan"))
+    reviewer = db.relationship('User', foreign_keys=[reviewer_id])
