@@ -7,12 +7,32 @@ document.addEventListener('DOMContentLoaded', function() {
   const propertyForm = document.getElementById('property-form');
   
   if (propertyForm) {
-    // Add a direct submit handler for debugging
     console.log('Property form found, adding submit event listener');
     
+    // Add a simple submit handler that allows the form to submit
     propertyForm.addEventListener('submit', function(event) {
       console.log('Form submit event triggered');
-      validatePropertyForm(event);
+      
+      // Don't prevent default form submission for now - let it submit as is
+      // Only do light validation to prevent obvious errors
+      const requiredFields = propertyForm.querySelectorAll('[required]');
+      let isValid = true;
+      
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          isValid = false;
+          field.classList.add('is-invalid');
+        } else {
+          field.classList.remove('is-invalid');
+        }
+      });
+      
+      if (!isValid) {
+        event.preventDefault();
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+      } else {
+        console.log('Form validation passed, submitting...');
+      }
     });
     
     // Initialize stock image selection

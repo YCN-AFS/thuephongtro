@@ -382,19 +382,35 @@ def edit_property(property_id):
     if request.method == 'POST':
         try:
             # Update property
-            property.title = request.form.get('title')
-            property.description = request.form.get('description')
-            property.property_type = request.form.get('property_type')
-            property.price = float(request.form.get('price'))
-            property.address = request.form.get('address')
-            property.district = request.form.get('district')
+            property.title = request.form.get('title', '')
+            property.description = request.form.get('description', '')
+            property.property_type = request.form.get('property_type', '')
+            
+            price = request.form.get('price', '0')
+            property.price = float(price) if price else 0.0
+            
+            property.address = request.form.get('address', '')
+            property.district = request.form.get('district', '')
             property.city = request.form.get('city', 'Biên Hòa')
             property.province = request.form.get('province', 'Đồng Nai')
-            property.area = float(request.form.get('area'))
-            property.bedrooms = int(request.form.get('bedrooms'))
-            property.bathrooms = int(request.form.get('bathrooms'))
-            property.furnishing = request.form.get('furnishing')
-            property.available_from = datetime.strptime(request.form.get('available_from'), '%Y-%m-%d').date()
+            
+            area = request.form.get('area', '0')
+            property.area = float(area) if area else 0.0
+            
+            bedrooms = request.form.get('bedrooms', '0')
+            property.bedrooms = int(bedrooms) if bedrooms else 0
+            
+            bathrooms = request.form.get('bathrooms', '0')
+            property.bathrooms = int(bathrooms) if bathrooms else 0
+            
+            property.furnishing = request.form.get('furnishing', '')
+            
+            available_from = request.form.get('available_from')
+            if available_from:
+                property.available_from = datetime.strptime(available_from, '%Y-%m-%d').date()
+            else:
+                property.available_from = datetime.now().date()
+                
             property.is_available = 'is_available' in request.form
             
             # Update amenities
@@ -538,14 +554,17 @@ def toggle_favorite(property_id):
         logging.error(error_message)
         
         # Check if this is an AJAX request
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request and request.headers and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({
                 'status': 'error',
                 'message': error_message
             }), 500
         else:
             flash(error_message, 'danger')
-            return redirect(url_for('property_details', property_id=property_id))
+            if property_id:
+                return redirect(url_for('property_details', property_id=property_id))
+            else:
+                return redirect(url_for('landlord_dashboard'))
 
 # AI chat assistant
 @app.route('/ai-assistant', methods=['GET', 'POST'])
@@ -553,15 +572,15 @@ def ai_assistant():
     # Get recent properties for AI recommendations
     recent_properties = []
     
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    if request.method == 'POST' and request and request.headers and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
             data = request.json
-            user_message = data.get('message', '')
+            user_message = data.get('message', '') if data else ''
             
             # Get property recommendations if available
             property_data = []
             if current_user.is_authenticated:
-                search_params = data.get('search_params', {})
+                search_params = data.get('search_params', {}) if data else {}
                 if search_params:
                     # Query properties based on search parameters
                     query = Property.query.filter(Property.is_available == True)
