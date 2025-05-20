@@ -1,0 +1,510 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ property.title }} - BienHoa Rentals{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}">Search</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ property.title }}</li>
+                </ol>
+            </nav>
+            <h1>{{ property.title }}</h1>
+            <p class="text-muted">
+                <i class="fas fa-map-marker-alt me-2"></i>{{ property.address }}, {{ property.district }}, {{ property.city }}
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end d-flex justify-content-md-end align-items-center">
+            <div class="d-flex gap-2">
+                {% if user.is_authenticated %}
+                    {% if property.owner_id == user.id %}
+                        <a href="{{ url_for('edit_property', property_id=property.id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i> Edit
+                        </a>
+                    {% else %}
+                        <button class="btn btn-outline-primary favorite-button" data-property-id="{{ property.id }}" title="{{ 'Remove from favorites' if is_favorite else 'Add to favorites' }}">
+                            <i class="{{ 'fas fa-heart text-danger' if is_favorite else 'far fa-heart' }}"></i>
+                        </button>
+                    {% endif %}
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="fas fa-comment-alt me-2"></i> Contact
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-heart me-2"></i> Save
+                    </a>
+                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary">
+                        <i class="fas fa-comment-alt me-2"></i> Contact
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Carousel -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for image in property.images %}
+                        <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="{{ loop.index0 }}" {{ 'class="active"' if loop.first else '' }} aria-current="{{ 'true' if loop.first else 'false' }}" aria-label="Slide {{ loop.index }}"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner rounded shadow">
+                    {% for image in property.images %}
+                        <div class="carousel-item {{ 'active' if loop.first else '' }}" style="height: 400px;">
+                            <img src="{{ image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height: 100%; object-fit: cover;">
+                        </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">{{ "{:,.0f}".format(property.price) }} VND<small class="text-muted">/month</small></h4>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4 text-center border-end">
+                            <div class="feature-icon mb-2">
+                                <i class="fas fa-ruler-combined"></i>
+                            </div>
+                            <p class="mb-0">{{ property.area }} m²</p>
+                        </div>
+                        <div class="col-4 text-center border-end">
+                            <div class="feature-icon mb-2">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <p class="mb-0">{{ property.bedrooms }} bed</p>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="feature-icon mb-2">
+                                <i class="fas fa-bath"></i>
+                            </div>
+                            <p class="mb-0">{{ property.bathrooms }} bath</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="mb-2">
+                            <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }} mb-2">
+                                {{ 'Available' if property.is_available else 'Not Available' }}
+                            </span>
+                            <span class="text-muted ms-2">From {{ property.available_from.strftime('%d %B, %Y') }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="fas fa-user me-2 text-muted"></i> 
+                            <span>Posted by {{ property.owner.first_name if property.owner.first_name else 'Owner' }}</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                            <span>Posted on {{ property.created_at.strftime('%d %B, %Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Information Tabs -->
+            <div class="property-detail-info mb-4">
+                <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Details</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Amenities</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Location</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                            Đánh giá
+                            {% if property.rating_count > 0 %}
+                                <span class="badge rounded-pill bg-secondary ms-1">{{ property.rating_count }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4" id="propertyTabContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                        <h3 class="mb-3">About this property</h3>
+                        <p>{{ property.description }}</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>Property Details</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-home me-2"></i> <strong>Type:</strong> {{ property.property_type|capitalize }}</li>
+                                    <li class="mb-2"><i class="fas fa-ruler-combined me-2"></i> <strong>Area:</strong> {{ property.area }} m²</li>
+                                    <li class="mb-2"><i class="fas fa-bed me-2"></i> <strong>Bedrooms:</strong> {{ property.bedrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-bath me-2"></i> <strong>Bathrooms:</strong> {{ property.bathrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-couch me-2"></i> <strong>Furnishing:</strong> {{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Price & Availability</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-tag me-2"></i> <strong>Price:</strong> {{ "{:,.0f}".format(property.price) }} VND/month</li>
+                                    <li class="mb-2"><i class="fas fa-calendar-check me-2"></i> <strong>Available from:</strong> {{ property.available_from.strftime('%d %B, %Y') }}</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle me-2 {{ 'text-success' if property.is_available else 'text-danger' }}"></i> <strong>Status:</strong> 
+                                        <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
+                                            {{ 'Available' if property.is_available else 'Not Available' }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Tab -->
+                    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <h3 class="mb-3">Property Details</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Property ID</th>
+                                            <td>{{ property.id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Property Type</th>
+                                            <td>{{ property.property_type|capitalize }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Area</th>
+                                            <td>{{ property.area }} m²</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Bedrooms</th>
+                                            <td>{{ property.bedrooms }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Bathrooms</th>
+                                            <td>{{ property.bathrooms }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Price</th>
+                                            <td>{{ "{:,.0f}".format(property.price) }} VND/month</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Furnishing</th>
+                                            <td>{{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Available From</th>
+                                            <td>{{ property.available_from.strftime('%d %B, %Y') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td>
+                                                <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
+                                                    {{ 'Available' if property.is_available else 'Not Available' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amenities Tab -->
+                    <div class="tab-pane fade" id="amenities" role="tabpanel" aria-labelledby="amenities-tab">
+                        <h3 class="mb-3">Amenities</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_air_conditioning else '' }}">
+                                        <i class="{{ 'fas' if property.has_air_conditioning else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_air_conditioning else '' }}"></i> Air Conditioning
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_parking else '' }}">
+                                        <i class="{{ 'fas' if property.has_parking else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_parking else '' }}"></i> Parking
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_wifi else '' }}">
+                                        <i class="{{ 'fas' if property.has_wifi else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_wifi else '' }}"></i> WiFi
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_washing_machine else '' }}">
+                                        <i class="{{ 'fas' if property.has_washing_machine else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_washing_machine else '' }}"></i> Washing Machine
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_refrigerator else '' }}">
+                                        <i class="{{ 'fas' if property.has_refrigerator else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_refrigerator else '' }}"></i> Refrigerator
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_tv else '' }}">
+                                        <i class="{{ 'fas' if property.has_tv else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_tv else '' }}"></i> TV
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_kitchen else '' }}">
+                                        <i class="{{ 'fas' if property.has_kitchen else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_kitchen else '' }}"></i> Kitchen
+                                    </li>
+                                    <li class="list-group-item {{ 'text-muted' if not property.has_balcony else '' }}">
+                                        <i class="{{ 'fas' if property.has_balcony else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_balcony else '' }}"></i> Balcony
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Tab -->
+                    <div class="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                        <h3 class="mb-3">Location</h3>
+                        <p>{{ property.address }}, {{ property.district }}, {{ property.city }}, {{ property.province }}</p>
+                        
+                        <div id="property-map" class="mt-3" style="height: 400px;" 
+                             data-latitude="{{ property.latitude if property.latitude else 10.95 }}" 
+                             data-longitude="{{ property.longitude if property.longitude else 106.82 }}"
+                             data-property-title="{{ property.title }}"></div>
+                    </div>
+                    
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="mb-0">Đánh giá & Nhận xét</h3>
+                            <a href="{{ url_for('property_reviews', property_id=property.id) }}" class="text-decoration-none">
+                                Xem tất cả <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+
+                        <!-- Average rating overview -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4">
+                                        <span class="display-4 fw-bold">{{ property.average_rating }}</span>
+                                        <span class="text-muted">/5</span>
+                                    </div>
+                                    <div>
+                                        <div class="stars-container mb-2">
+                                            {% for i in range(5) %}
+                                                {% if i < property.average_rating|int %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% elif property.average_rating - i > 0 and property.average_rating - i < 1 %}
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-warning"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-muted mb-0">{{ property.rating_count }} đánh giá</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review list -->
+                        {% if reviews %}
+                            <div class="reviews-list">
+                                {% for review in reviews %}
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="avatar me-3">
+                                                        {% if review.reviewer.profile_image_url %}
+                                                            <img src="{{ review.reviewer.profile_image_url }}" alt="Avatar" class="rounded-circle" width="40" height="40">
+                                                        {% else %}
+                                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                {{ review.reviewer.first_name[0] if review.reviewer.first_name else review.reviewer.id[0] }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">{{ review.reviewer.first_name if review.reviewer.first_name else 'Người dùng' }}</h6>
+                                                        <small class="text-muted">{{ review.created_at.strftime('%d/%m/%Y') }}</small>
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if user.is_authenticated and user.id == review.reviewer_id %}
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ url_for('add_review', property_id=property.id) }}">
+                                                                    <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form action="{{ url_for('delete_review', property_id=property.id, review_id=review.id) }}" method="POST" class="d-inline">
+                                                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')">
+                                                                        <i class="fas fa-trash-alt me-2"></i>Xóa
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="rating mb-2">
+                                                {% for i in range(5) %}
+                                                    {% if i < review.rating %}
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-warning"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            
+                                            {% if review.comment %}
+                                                <p class="review-text mb-0">{{ review.comment }}</p>
+                                            {% else %}
+                                                <p class="text-muted fst-italic mb-0">Không có nhận xét.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Chưa có đánh giá nào cho bất động sản này.
+                            </div>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            {% if user_review %}
+                                <a href="{{ url_for('add_review', property_id=property.id) }}" class="btn btn-outline-primary mt-3">
+                                    <i class="fas fa-edit me-2"></i>Chỉnh sửa đánh giá của bạn
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('add_review', property_id=property.id) }}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-star me-2"></i>Viết đánh giá
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-secondary mt-3">
+                                <i class="fas fa-user-lock me-2"></i>Vui lòng <a href="{{ url_for('replit_auth.login') }}">đăng nhập</a> để viết đánh giá.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Similar Properties -->
+            {% if similar_properties %}
+            <div class="mt-4">
+                <h4>Similar Properties</h4>
+                <div class="list-group mt-2">
+                    {% for prop in similar_properties %}
+                        <a href="{{ url_for('property_details', property_id=prop.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ prop.title }}</h5>
+                                <small>{{ "{:,.0f}".format(prop.price) }} VND</small>
+                            </div>
+                            <p class="mb-1">{{ prop.district }}, {{ prop.bedrooms }} bed, {{ prop.bathrooms }} bath</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Social Sharing -->
+            <div class="social-sharing mb-4">
+                <h4>Share this property</h4>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ property.title }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="javascript:void(0)" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')" class="btn btn-outline-primary">
+                        <i class="fas fa-link"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- More from this landlord -->
+            {% if more_from_owner %}
+            <div class="mt-4">
+                <h4>More from this Landlord</h4>
+                <div class="list-group mt-2">
+                    {% for prop in more_from_owner %}
+                        <a href="{{ url_for('property_details', property_id=prop.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ prop.title }}</h5>
+                                <small>{{ "{:,.0f}".format(prop.price) }} VND</small>
+                            </div>
+                            <p class="mb-1">{{ prop.district }}, {{ prop.bedrooms }} bed, {{ prop.bathrooms }} bath</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Map JavaScript -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+
+<script>
+    // Favorite toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const favoriteButtons = document.querySelectorAll('.favorite-button');
+        favoriteButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const propertyId = this.dataset.propertyId;
+                try {
+                    const response = await fetch(`/property/${propertyId}/favorite`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const iconElement = this.querySelector('i');
+                        
+                        if (data.status === 'added') {
+                            iconElement.className = 'fas fa-heart text-danger';
+                            this.title = 'Remove from favorites';
+                            showToast('Added to Favorites', 'Property has been added to your favorites.', 'success');
+                        } else {
+                            iconElement.className = 'far fa-heart';
+                            this.title = 'Add to favorites';
+                            showToast('Removed from Favorites', 'Property has been removed from your favorites.', 'info');
+                        }
+                    } else {
+                        console.error('Error toggling favorite');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
