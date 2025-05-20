@@ -67,7 +67,7 @@ function validatePropertyForm(event) {
   requiredFields.forEach(field => {
     if (!field.value.trim()) {
       isValid = false;
-      showFieldError(field, 'This field is required');
+      showFieldError(field, 'Trường này không được để trống');
     } else {
       clearFieldError(field);
     }
@@ -81,7 +81,7 @@ function validatePropertyForm(event) {
     
     if (isNaN(price) || price <= 0) {
       isValid = false;
-      showFieldError(priceField, 'Please enter a valid price');
+      showFieldError(priceField, 'Vui lòng nhập giá hợp lệ');
     }
   }
   
@@ -93,7 +93,7 @@ function validatePropertyForm(event) {
     
     if (isNaN(area) || area <= 0) {
       isValid = false;
-      showFieldError(areaField, 'Please enter a valid area');
+      showFieldError(areaField, 'Vui lòng nhập diện tích hợp lệ');
     }
   }
   
@@ -106,7 +106,7 @@ function validatePropertyForm(event) {
     
     if (isNaN(bedrooms) || bedrooms < 0) {
       isValid = false;
-      showFieldError(bedroomsField, 'Please enter a valid number');
+      showFieldError(bedroomsField, 'Vui lòng nhập số phòng ngủ hợp lệ');
     }
   }
   
@@ -115,7 +115,7 @@ function validatePropertyForm(event) {
     
     if (isNaN(bathrooms) || bathrooms < 0) {
       isValid = false;
-      showFieldError(bathroomsField, 'Please enter a valid number');
+      showFieldError(bathroomsField, 'Vui lòng nhập số phòng tắm hợp lệ');
     }
   }
   
