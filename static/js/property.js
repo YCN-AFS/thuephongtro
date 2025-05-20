@@ -7,13 +7,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const propertyForm = document.getElementById('property-form');
   
   if (propertyForm) {
-    propertyForm.addEventListener('submit', validatePropertyForm);
+    // Add a direct submit handler for debugging
+    console.log('Property form found, adding submit event listener');
+    
+    propertyForm.addEventListener('submit', function(event) {
+      console.log('Form submit event triggered');
+      validatePropertyForm(event);
+    });
     
     // Initialize stock image selection
     initImageSelection();
     
     // Initialize image upload functionality
     initImageUpload();
+  } else {
+    console.log('Property form not found');
   }
   
   // Delete property confirmation
@@ -123,11 +131,8 @@ function validatePropertyForm(event) {
   const selectedImages = getSelectedImages();
   const imageError = document.getElementById('image-error');
   
-  if (selectedImages.length === 0 && imageError) {
-    isValid = false;
-    imageError.textContent = 'Please select at least one image';
-    imageError.style.display = 'block';
-  } else if (imageError) {
+  // Make the image selection optional - don't prevent form submission if no images
+  if (imageError) {
     imageError.style.display = 'none';
   }
   

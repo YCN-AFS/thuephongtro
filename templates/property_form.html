@@ -276,9 +276,14 @@
                         
                         <!-- Submit Button -->
                         <div class="col-12 mt-4 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <button type="submit" id="submit-property-form" class="btn btn-primary btn-lg px-5">
                                 <i class="fas {{ 'fa-save' if property else 'fa-plus-circle' }} me-2"></i>
                                 {{ 'Cập Nhật Bất Động Sản' if property else 'Thêm Bất Động Sản' }}
+                            </button>
+                            <!-- Testing direct submit button without validation -->
+                            <button type="submit" id="direct-submit" class="btn btn-success btn-lg px-5 mx-2" formnovalidate>
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Gửi trực tiếp
                             </button>
                             <a href="{{ url_for('property_details', property_id=property.id) if property else url_for('landlord_dashboard') }}" class="btn btn-outline-secondary btn-lg ms-2">
                                 Hủy
