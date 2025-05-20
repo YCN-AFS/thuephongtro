@@ -272,11 +272,74 @@ function confirmDeleteProperty(event) {
   const propertyTitle = button.dataset.propertyTitle;
   
   if (confirm(`Bạn có chắc chắn muốn xoá bất động sản "${propertyTitle}"? Hành động này không thể hoàn tác.`)) {
-    // Submit the form
-    const form = document.getElementById(`delete-property-form-${propertyId}`);
-    if (form) {
-      form.submit();
-    }
+    // Get the row element for animation
+    const tableRow = button.closest('tr');
+    
+    // Send AJAX request to delete the property
+    fetch(`/property/${propertyId}/delete`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        // Fade out and remove the row
+        tableRow.style.transition = 'opacity 0.5s ease';
+        tableRow.style.opacity = '0';
+        
+        // Show success message
+        showToast('Thành công', data.message, 'success');
+        
+        // Remove the row after animation completes
+        setTimeout(() => {
+          tableRow.remove();
+          
+          // Update the property count in the dashboard
+          updatePropertyCount();
+        }, 500);
+      } else {
+        // Show error message
+        showToast('Lỗi', data.message, 'danger');
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting property:', error);
+      showToast('Lỗi', 'Đã xảy ra lỗi khi xoá bất động sản', 'danger');
+      
+      // Fallback to form submission if AJAX fails
+      const form = document.getElementById(`delete-property-form-${propertyId}`);
+      if (form) {
+        form.submit();
+      }
+    });
+  }
+}
+
+/**
+ * Update property count in dashboard stats after deletion
+ */
+function updatePropertyCount() {
+  // Get all stat cards
+  const totalProperties = document.querySelector('.stat-card:nth-child(1) h2');
+  const availableProperties = document.querySelector('.stat-card:nth-child(2) h2');
+  const rentedProperties = document.querySelector('.stat-card:nth-child(3) h2');
+  
+  // Update counts if elements exist
+  if (totalProperties) {
+    const currentTotal = parseInt(totalProperties.textContent);
+    totalProperties.textContent = Math.max(0, currentTotal - 1);
+  }
+  
+  // The available or rented count should also be decreased, depending on property status
+  // We can check which rows are left to determine the counts
+  if (availableProperties && rentedProperties) {
+    const availableCount = document.querySelectorAll('td .availability-toggle:checked').length;
+    const rentedCount = document.querySelectorAll('td .availability-toggle:not(:checked)').length;
+    
+    availableProperties.textContent = availableCount;
+    rentedProperties.textContent = rentedCount;
   }
 }
 
