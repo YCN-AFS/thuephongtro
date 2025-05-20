@@ -73,8 +73,8 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12">
-                <h2 class="text-center">Featured Properties</h2>
-                <p class="text-center text-muted">Discover our handpicked selection of the finest rental properties in Biên Hòa</p>
+                <h2 class="text-center">Bất Động Sản Nổi Bật</h2>
+                <p class="text-center text-muted">Khám phá những lựa chọn hàng đầu của chúng tôi tại Biên Hòa</p>
             </div>
         </div>
 
@@ -84,7 +84,7 @@
                     <div class="col-md-6 col-lg-3">
                         <div class="property-card">
                             <div class="property-image" style="background-image: url('{{ property.images[0].url if property.images else 'https://pixabay.com/get/g42f931ecb58762a33b28eea42149ea8048d743915478c2331a5a36343a1a8d9461ed6ed14be306dd5945c24ad347f0d560eddd76f8ca7c0de4c6bab2038fc7b0_1280.jpg' }}');">
-                                <div class="property-price">{{ "{:,.0f}".format(property.price) }} VND/month</div>
+                                <div class="property-price">{{ "{:,.0f}".format(property.price) }} VND/tháng</div>
                             </div>
                             <div class="property-info">
                                 <h3 class="property-title">
@@ -99,7 +99,7 @@
                                     <span class="feature"><i class="fas fa-ruler-combined"></i> {{ property.area }}m²</span>
                                 </div>
                                 <div class="mt-3">
-                                    <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary w-100">View Details</a>
+                                    <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary w-100">Xem Chi Tiết</a>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                 {% endfor %}
             {% else %}
                 <div class="col-12 text-center">
-                    <p class="text-muted">No properties available at the moment.</p>
+                    <p class="text-muted">Hiện không có bất động sản nào.</p>
                 </div>
             {% endif %}
         </div>
@@ -115,7 +115,7 @@
         <div class="row mt-5">
             <div class="col-12 text-center">
                 <a href="{{ url_for('search') }}" class="btn btn-secondary btn-lg px-5">
-                    View All Properties
+                    Xem Tất Cả Bất Động Sản
                 </a>
             </div>
         </div>
@@ -127,8 +127,8 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h2>Why Choose BienHoa Rentals</h2>
-                <p class="text-muted">We make finding your next home simple and stress-free</p>
+                <h2>Tại Sao Chọn BienHoa Rentals</h2>
+                <p class="text-muted">Chúng tôi giúp việc tìm ngôi nhà tiếp theo của bạn trở nên đơn giản và không căng thẳng</p>
             </div>
         </div>
         <div class="row g-4">
@@ -136,8 +136,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <i class="fas fa-search fa-3x text-primary mb-3"></i>
-                        <h4>Easy Search</h4>
-                        <p class="text-muted">Find properties that match your needs with our powerful search filters.</p>
+                        <h4>Tìm Kiếm Dễ Dàng</h4>
+                        <p class="text-muted">Tìm bất động sản phù hợp với nhu cầu của bạn với bộ lọc tìm kiếm mạnh mẽ của chúng tôi.</p>
                     </div>
                 </div>
             </div>
@@ -145,8 +145,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <i class="fas fa-robot fa-3x text-primary mb-3"></i>
-                        <h4>AI Assistant</h4>
-                        <p class="text-muted">Get personalized property recommendations with our AI-powered assistant.</p>
+                        <h4>Trợ Lý AI</h4>
+                        <p class="text-muted">Nhận các đề xuất bất động sản được cá nhân hóa với trợ lý thông minh của chúng tôi.</p>
                     </div>
                 </div>
             </div>
@@ -154,8 +154,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <i class="fas fa-house-user fa-3x text-primary mb-3"></i>
-                        <h4>Local Expertise</h4>
-                        <p class="text-muted">Our platform specializes in Biên Hòa properties with local insights.</p>
+                        <h4>Chuyên Môn Địa Phương</h4>
+                        <p class="text-muted">Nền tảng của chúng tôi chuyên về bất động sản tại Biên Hòa với hiểu biết sâu sắc về địa phương.</p>
                     </div>
                 </div>
             </div>
@@ -168,21 +168,21 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <img src="https://pixabay.com/get/ge3780dc62b4a5838716e28ed4fed747638c80891f6ca78523db4484e870d26a48d947e25b434e235268a4f27288da41595c8aaf58acaada18aad25fee4f14165_1280.jpg" alt="Become a Landlord" class="img-fluid rounded">
+                <img src="https://pixabay.com/get/ge3780dc62b4a5838716e28ed4fed747638c80891f6ca78523db4484e870d26a48d947e25b434e235268a4f27288da41595c8aaf58acaada18aad25fee4f14165_1280.jpg" alt="Trở thành Chủ Nhà" class="img-fluid rounded">
             </div>
             <div class="col-md-6">
-                <h2>Become a Landlord</h2>
-                <p class="text-muted">Do you have a property in Biên Hòa that you want to rent out? Join our platform and reach thousands of potential tenants.</p>
+                <h2>Trở Thành Chủ Nhà</h2>
+                <p class="text-muted">Bạn có nhà ở Biên Hòa muốn cho thuê? Tham gia nền tảng của chúng tôi và tiếp cận hàng nghìn người thuê tiềm năng.</p>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Free property listings</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Connect with verified renters</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Manage all your properties in one place</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Get insights and analytics</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Đăng tin miễn phí</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Kết nối với người thuê đã xác minh</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Quản lý tất cả bất động sản của bạn tại một nơi</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Nhận báo cáo và phân tích</li>
                 </ul>
                 {% if user.is_authenticated %}
-                    <a href="{{ url_for('landlord_dashboard') }}" class="btn btn-primary btn-lg mt-3">List Your Property</a>
+                    <a href="{{ url_for('landlord_dashboard') }}" class="btn btn-primary btn-lg mt-3">Đăng Tin Ngay</a>
                 {% else %}
-                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary btn-lg mt-3">Get Started</a>
+                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary btn-lg mt-3">Bắt Đầu Ngay</a>
                 {% endif %}
             </div>
         </div>
@@ -194,8 +194,8 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h2>Popular Areas in Biên Hòa</h2>
-                <p class="text-muted">Explore the most sought-after neighborhoods in Biên Hòa</p>
+                <h2>Khu Vực Phổ Biến ở Biên Hòa</h2>
+                <p class="text-muted">Khám phá những khu vực được tìm kiếm nhiều nhất ở Biên Hòa</p>
             </div>
         </div>
         <div class="row g-4">
@@ -205,7 +205,7 @@
                         <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body p-4">
                                 <h4>{{ district }}</h4>
-                                <p class="text-muted mb-0">{{ count }} properties available</p>
+                                <p class="text-muted mb-0">{{ count }} bất động sản hiện có</p>
                             </div>
                         </div>
                     </a>
