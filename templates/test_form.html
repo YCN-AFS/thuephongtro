@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+
+{% block title %}Thử Nghiệm Form - BienHoa Rentals{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Thử Nghiệm Form Đăng Tin</h3>
+                </div>
+                <div class="card-body">
+                    <form id="test-form" method="POST" action="{{ url_for('create_property') }}" enctype="multipart/form-data">
+                        <!-- Required fields -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Tiêu Đề*</label>
+                            <input type="text" class="form-control" id="title" name="title" required value="Căn hộ test">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Mô Tả*</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required>Căn hộ test cho form submission</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="property_type" class="form-label">Loại Nhà*</label>
+                                <select class="form-select" id="property_type" name="property_type" required>
+                                    <option value="apartment" selected>Căn Hộ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Giá Thuê (VND/tháng)*</label>
+                                <input type="number" class="form-control" id="price" name="price" required value="5000000">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">Địa Chỉ*</label>
+                                <input type="text" class="form-control" id="address" name="address" required value="123 Test Street">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="district" class="form-label">Quận/Huyện*</label>
+                                <input type="text" class="form-control" id="district" name="district" required value="Biên Hòa">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="available_from" class="form-label">Ngày có sẵn*</label>
+                                <input type="date" class="form-control" id="available_from" name="available_from" required value="2025-05-30">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="area" class="form-label">Diện Tích (m²)*</label>
+                                <input type="number" class="form-control" id="area" name="area" required value="50">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="bedrooms" class="form-label">Phòng Ngủ*</label>
+                                <input type="number" class="form-control" id="bedrooms" name="bedrooms" required value="2">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="bathrooms" class="form-label">Phòng Tắm*</label>
+                                <input type="number" class="form-control" id="bathrooms" name="bathrooms" required value="1">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="furnishing" class="form-label">Nội Thất</label>
+                            <select class="form-select" id="furnishing" name="furnishing">
+                                <option value="unfurnished" selected>Không có sẵn</option>
+                                <option value="semi-furnished">Một phần</option>
+                                <option value="fully-furnished">Đầy đủ</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Submit Buttons -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                Đăng Tin
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                                Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('test-form');
+    
+    form.addEventListener('submit', function(event) {
+        console.log('Form submission started');
+        // Don't use event.preventDefault() here to allow normal form submission
+    });
+});
+</script>
+{% endblock %}
