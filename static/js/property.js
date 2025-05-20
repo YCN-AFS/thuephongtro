@@ -271,7 +271,7 @@ function confirmDeleteProperty(event) {
   const propertyId = button.dataset.propertyId;
   const propertyTitle = button.dataset.propertyTitle;
   
-  if (confirm(`Are you sure you want to delete "${propertyTitle}"? This action cannot be undone.`)) {
+  if (confirm(`Bạn có chắc chắn muốn xoá bất động sản "${propertyTitle}"? Hành động này không thể hoàn tác.`)) {
     // Submit the form
     const form = document.getElementById(`delete-property-form-${propertyId}`);
     if (form) {

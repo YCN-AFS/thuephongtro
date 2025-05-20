@@ -461,18 +461,39 @@ def delete_property(property_id):
     
     # Check if user is the owner
     if property.owner_id != current_user.id:
-        flash('You do not have permission to delete this property', 'danger')
+        flash('Bạn không có quyền xoá bất động sản này', 'danger')
         return redirect(url_for('property_details', property_id=property_id))
     
     try:
+        # Get the property title for the success message
+        property_title = property.title
+        
+        # Delete property (cascades to delete related images from database)
         db.session.delete(property)
         db.session.commit()
-        flash('Property deleted successfully!', 'success')
+        
+        # Handle AJAX request for dynamic removal
+        if request and request.headers and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'success',
+                'message': f'Bất động sản "{property_title}" đã được xoá thành công'
+            })
+        
+        # Normal form submission
+        flash(f'Bất động sản "{property_title}" đã được xoá thành công', 'success')
         return redirect(url_for('landlord_dashboard'))
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting property: {str(e)}', 'danger')
         logging.error(f"Error deleting property: {str(e)}")
+        
+        # Handle AJAX request
+        if request and request.headers and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'error',
+                'message': f'Lỗi khi xoá bất động sản: {str(e)}'
+            }), 500
+        
+        flash(f'Lỗi khi xoá bất động sản: {str(e)}', 'danger')
         return redirect(url_for('property_details', property_id=property_id))
 
 # User profile page
