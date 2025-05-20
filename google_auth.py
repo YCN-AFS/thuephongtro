@@ -36,6 +36,9 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
+    # Show the configured redirect URL for debug purposes
+    print(f"Using redirect URL: {DEV_REDIRECT_URL}")
+    
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         # Use the exact redirect URL that's registered in Google Cloud Console

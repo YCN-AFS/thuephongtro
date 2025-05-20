@@ -19,8 +19,8 @@ from google_auth import google_auth
 # Register Replit Auth blueprint
 app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
 
-# Register Google Auth blueprint
-app.register_blueprint(google_auth, url_prefix="/google_login")
+# Register Google Auth blueprint with no prefix to avoid path duplication
+app.register_blueprint(google_auth)
 
 # Make session permanent
 @app.before_request
