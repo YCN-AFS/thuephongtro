@@ -136,12 +136,99 @@ def property_details(property_id):
         Property.price.between(property.price * 0.8, property.price * 1.2)
     ).limit(4).all()
     
+    # Get property reviews
+    reviews = Review.query.filter_by(property_id=property_id).order_by(Review.created_at.desc()).limit(5).all()
+    
+    # Check if user has already reviewed
+    user_review = None
+    if current_user.is_authenticated:
+        user_review = Review.query.filter_by(
+            property_id=property_id,
+            reviewer_id=current_user.id
+        ).first()
+    
     return render_template('property_details.html', 
                            property=property,
                            is_favorite=is_favorite,
                            more_from_owner=more_from_owner,
                            similar_properties=similar_properties,
+                           reviews=reviews,
+                           user_review=user_review,
                            user=current_user)
+
+# Reviews and Ratings
+@app.route('/property/<int:property_id>/reviews')
+def property_reviews(property_id):
+    """View all reviews for a property"""
+    property = Property.query.get_or_404(property_id)
+    reviews = Review.query.filter_by(property_id=property_id).order_by(Review.created_at.desc()).all()
+    
+    return render_template('property_reviews.html',
+                          property=property,
+                          reviews=reviews,
+                          user=current_user)
+
+@app.route('/property/<int:property_id>/review', methods=['GET', 'POST'])
+@require_login
+def add_review(property_id):
+    """Add or update a review for a property"""
+    property = Property.query.get_or_404(property_id)
+    
+    # Check if user has already reviewed this property
+    existing_review = Review.query.filter_by(
+        property_id=property_id, 
+        reviewer_id=current_user.id
+    ).first()
+    
+    if request.method == 'POST':
+        rating = request.form.get('rating')
+        comment = request.form.get('comment')
+        
+        if not rating or not rating.isdigit() or int(rating) < 1 or int(rating) > 5:
+            flash('Vui lòng chọn đánh giá từ 1-5 sao.', 'danger')
+            return redirect(url_for('add_review', property_id=property_id))
+        
+        if existing_review:
+            # Update existing review
+            existing_review.rating = int(rating)
+            existing_review.comment = comment
+            existing_review.updated_at = datetime.now()
+            flash('Đánh giá của bạn đã được cập nhật!', 'success')
+        else:
+            # Create new review
+            new_review = Review()
+            new_review.property_id = property_id
+            new_review.reviewer_id = current_user.id
+            new_review.rating = int(rating)
+            new_review.comment = comment
+            db.session.add(new_review)
+            flash('Cảm ơn bạn đã đánh giá!', 'success')
+        
+        db.session.commit()
+        return redirect(url_for('property_details', property_id=property_id))
+    
+    # GET request - show the review form
+    return render_template('review_form.html',
+                          property=property,
+                          existing_review=existing_review,
+                          user=current_user)
+
+@app.route('/property/<int:property_id>/review/<int:review_id>/delete', methods=['POST'])
+@require_login
+def delete_review(property_id, review_id):
+    """Delete a review"""
+    review = Review.query.get_or_404(review_id)
+    
+    # Check if the user is the reviewer
+    if review.reviewer_id != current_user.id:
+        flash('Bạn không có quyền xóa đánh giá này.', 'danger')
+        return redirect(url_for('property_details', property_id=property_id))
+    
+    db.session.delete(review)
+    db.session.commit()
+    
+    flash('Đánh giá đã được xóa.', 'success')
+    return redirect(url_for('property_details', property_id=property_id))
 
 # Landlord dashboard page
 @app.route('/dashboard')
