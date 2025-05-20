@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+{% block title %}Đánh Giá Nhà Cho Thuê{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">{% if existing_review %}Cập Nhật Đánh Giá{% else %}Thêm Đánh Giá{% endif %}</h3>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h5>{{ property.title }}</h5>
+            <p class="text-muted">{{ property.address }}, {{ property.district }}, {{ property.city }}</p>
+          </div>
+
+          <form method="POST" action="{{ url_for('add_review', property_id=property.id) }}">
+            <div class="mb-4">
+              <label class="form-label">Đánh giá của bạn</label>
+              <div class="rating-input">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating1" value="1" {% if existing_review and existing_review.rating == 1 %}checked{% endif %} required>
+                  <label class="form-check-label" for="rating1">
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="ms-1">Tệ</span>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating2" value="2" {% if existing_review and existing_review.rating == 2 %}checked{% endif %}>
+                  <label class="form-check-label" for="rating2">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="ms-1">Không hài lòng</span>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating3" value="3" {% if existing_review and existing_review.rating == 3 %}checked{% endif %}>
+                  <label class="form-check-label" for="rating3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="ms-1">Bình thường</span>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating4" value="4" {% if existing_review and existing_review.rating == 4 %}checked{% endif %}>
+                  <label class="form-check-label" for="rating4">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="ms-1">Hài lòng</span>
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="rating" id="rating5" value="5" {% if existing_review and existing_review.rating == 5 %}checked{% endif %}>
+                  <label class="form-check-label" for="rating5">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="ms-1">Tuyệt vời</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="comment" class="form-label">Nhận xét của bạn</label>
+              <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="Chia sẻ trải nghiệm của bạn về địa điểm này...">{{ existing_review.comment if existing_review else '' }}</textarea>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-outline-secondary">Hủy</a>
+              <button type="submit" class="btn btn-primary">{% if existing_review %}Cập Nhật{% else %}Gửi Đánh Giá{% endif %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Optional JavaScript for enhancing the rating experience
+  document.addEventListener('DOMContentLoaded', function() {
+    const ratingInputs = document.querySelectorAll('input[name="rating"]');
+    const ratingLabels = document.querySelectorAll('.rating-input .form-check-label');
+    
+    // Highlight stars on hover
+    ratingLabels.forEach((label, index) => {
+      label.addEventListener('mouseenter', () => {
+        for (let i = 0; i <= index; i++) {
+          ratingLabels[i].classList.add('hover');
+        }
+      });
+      
+      label.addEventListener('mouseleave', () => {
+        ratingLabels.forEach(label => {
+          label.classList.remove('hover');
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

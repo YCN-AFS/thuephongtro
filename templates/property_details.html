@@ -82,6 +82,14 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Location</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                            Đánh giá
+                            {% if property.rating_count() > 0 %}
+                                <span class="badge rounded-pill bg-secondary ms-1">{{ property.rating_count() }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
                 </ul>
                 <div class="tab-content p-4" id="propertyTabContent">
                     <!-- Overview Tab -->
