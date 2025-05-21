@@ -9,14 +9,14 @@
         <div class="col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
-                    <h4 class="mb-0">Filters</h4>
+                    <h4 class="mb-0">Bộ Lọc</h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ url_for('search') }}" method="GET">
                         <div class="mb-3">
-                            <label for="district" class="form-label">District</label>
+                            <label for="district" class="form-label">Khu Vực</label>
                             <select class="form-select" id="district" name="district">
-                                <option value="">All Districts</option>
+                                <option value="">Tất Cả Khu Vực</option>
                                 {% for district, count in districts %}
                                     <option value="{{ district }}" {{ 'selected' if search_params.get('district') == district }}>{{ district }} ({{ count }})</option>
                                 {% endfor %}
@@ -24,20 +24,20 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="property_type" class="form-label">Property Type</label>
+                            <label for="property_type" class="form-label">Loại Căn Hộ</label>
                             <select class="form-select" id="property_type" name="property_type">
-                                <option value="">All Types</option>
-                                <option value="apartment" {{ 'selected' if search_params.get('property_type') == 'apartment' }}>Apartment</option>
-                                <option value="house" {{ 'selected' if search_params.get('property_type') == 'house' }}>House</option>
-                                <option value="room" {{ 'selected' if search_params.get('property_type') == 'room' }}>Room</option>
+                                <option value="">Tất Cả Loại</option>
+                                <option value="apartment" {{ 'selected' if search_params.get('property_type') == 'apartment' }}>Căn Hộ</option>
+                                <option value="house" {{ 'selected' if search_params.get('property_type') == 'house' }}>Nhà</option>
+                                <option value="room" {{ 'selected' if search_params.get('property_type') == 'room' }}>Phòng Trọ</option>
                                 <option value="studio" {{ 'selected' if search_params.get('property_type') == 'studio' }}>Studio</option>
                             </select>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="bedrooms" class="form-label">Bedrooms</label>
+                            <label for="bedrooms" class="form-label">Phòng Ngủ</label>
                             <select class="form-select" id="bedrooms" name="bedrooms">
-                                <option value="">Any</option>
+                                <option value="">Tất Cả</option>
                                 <option value="1" {{ 'selected' if search_params.get('bedrooms') == '1' }}>1+</option>
                                 <option value="2" {{ 'selected' if search_params.get('bedrooms') == '2' }}>2+</option>
                                 <option value="3" {{ 'selected' if search_params.get('bedrooms') == '3' }}>3+</option>
@@ -46,16 +46,16 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Price Range (VND)</label>
+                            <label class="form-label">Khoảng Giá (VND)</label>
                             <div class="row g-2">
                                 <div class="col-6">
                                     <input type="number" class="form-control" id="min_price" name="min_price" 
-                                        placeholder="Min" min="0" step="500000" 
+                                        placeholder="Tối thiểu" min="0" step="500000" 
                                         value="{{ search_params.get('min_price', '') }}">
                                 </div>
                                 <div class="col-6">
                                     <input type="number" class="form-control" id="max_price" name="max_price" 
-                                        placeholder="Max" min="0" step="500000" 
+                                        placeholder="Tối đa" min="0" step="500000" 
                                         value="{{ search_params.get('max_price', '') }}">
                                 </div>
                             </div>
@@ -88,10 +88,10 @@
         <!-- Search Results -->
         <div class="col-lg-9">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Search Results</h2>
+                <h2>Kết Quả Tìm Kiếm</h2>
                 <div>
                     {% if properties %}
-                        <span class="text-muted">{{ properties|length }} properties found</span>
+                        <span class="text-muted">{{ properties|length }} căn hộ được tìm thấy</span>
                     {% endif %}
                 </div>
             </div>
@@ -125,7 +125,7 @@
                                     </div>
                                     
                                     <div class="mt-3 d-flex justify-content-between">
-                                        <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary flex-grow-1 me-2">View Details</a>
+                                        <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary flex-grow-1 me-2">Xem Chi Tiết</a>
                                         {% if user.is_authenticated %}
                                             <button class="btn btn-sm btn-outline-secondary favorite-button" data-property-id="{{ property.id }}">
                                                 <i class="far fa-heart"></i>
