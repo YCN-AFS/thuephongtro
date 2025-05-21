@@ -4,6 +4,7 @@
 .btn-danger {
   background-color: #FF5A5F !important;
   border-color: #FF5A5F !important;
+  color: white !important;
 }
 
 .btn-danger:hover, 
@@ -11,6 +12,7 @@
 .btn-danger:active {
   background-color: #e6484e !important;
   border-color: #e6484e !important;
+  color: white !important;
 }
 
 /* Property image fixes */
