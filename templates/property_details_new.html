@@ -127,7 +127,7 @@
                         <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Tiện Ích</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Location</button>
+                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Vị Trí</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
@@ -141,28 +141,28 @@
                 <div class="tab-content p-4" id="propertyTabContent">
                     <!-- Overview Tab -->
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-                        <h3 class="mb-3">About this property</h3>
+                        <h3 class="mb-3">Thông tin về căn hộ này</h3>
                         <p>{{ property.description }}</p>
                         
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <h4>Property Details</h4>
+                                <h4>Chi Tiết Căn Hộ</h4>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2"><i class="fas fa-home me-2"></i> <strong>Type:</strong> {{ property.property_type|capitalize }}</li>
-                                    <li class="mb-2"><i class="fas fa-ruler-combined me-2"></i> <strong>Area:</strong> {{ property.area }} m²</li>
-                                    <li class="mb-2"><i class="fas fa-bed me-2"></i> <strong>Bedrooms:</strong> {{ property.bedrooms }}</li>
-                                    <li class="mb-2"><i class="fas fa-bath me-2"></i> <strong>Bathrooms:</strong> {{ property.bathrooms }}</li>
-                                    <li class="mb-2"><i class="fas fa-couch me-2"></i> <strong>Furnishing:</strong> {{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</li>
+                                    <li class="mb-2"><i class="fas fa-home me-2"></i> <strong>Loại:</strong> {{ property.property_type|capitalize }}</li>
+                                    <li class="mb-2"><i class="fas fa-ruler-combined me-2"></i> <strong>Diện tích:</strong> {{ property.area }} m²</li>
+                                    <li class="mb-2"><i class="fas fa-bed me-2"></i> <strong>Phòng ngủ:</strong> {{ property.bedrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-bath me-2"></i> <strong>Phòng tắm:</strong> {{ property.bathrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-couch me-2"></i> <strong>Nội thất:</strong> {{ property.furnishing|capitalize if property.furnishing else 'Chưa xác định' }}</li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h4>Price & Availability</h4>
+                                <h4>Giá & Tình Trạng</h4>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2"><i class="fas fa-tag me-2"></i> <strong>Price:</strong> {{ "{:,.0f}".format(property.price) }} VND/month</li>
-                                    <li class="mb-2"><i class="fas fa-calendar-check me-2"></i> <strong>Available from:</strong> {{ property.available_from.strftime('%d %B, %Y') }}</li>
-                                    <li class="mb-2"><i class="fas fa-check-circle me-2 {{ 'text-success' if property.is_available else 'text-danger' }}"></i> <strong>Status:</strong> 
+                                    <li class="mb-2"><i class="fas fa-tag me-2"></i> <strong>Giá:</strong> {{ "{:,.0f}".format(property.price) }} VND/tháng</li>
+                                    <li class="mb-2"><i class="fas fa-calendar-check me-2"></i> <strong>Có sẵn từ:</strong> {{ property.available_from.strftime('%d %B, %Y') }}</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle me-2 {{ 'text-success' if property.is_available else 'text-danger' }}"></i> <strong>Tình trạng:</strong> 
                                         <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
-                                            {{ 'Available' if property.is_available else 'Not Available' }}
+                                            {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
                                         </span>
                                     </li>
                                 </ul>
@@ -172,17 +172,17 @@
                     
                     <!-- Details Tab -->
                     <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <h3 class="mb-3">Property Details</h3>
+                        <h3 class="mb-3">Chi Tiết Căn Hộ</h3>
                         <div class="row">
                             <div class="col-md-6">
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>Property ID</th>
+                                            <th>Mã Căn Hộ</th>
                                             <td>{{ property.id }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Property Type</th>
+                                            <th>Loại Căn Hộ</th>
                                             <td>{{ property.property_type|capitalize }}</td>
                                         </tr>
                                         <tr>
