@@ -796,6 +796,231 @@ def ai_assistant():
                            show_ai_chat=True,
                            user=current_user)
 
+# Admin routes
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    # Statistics for dashboard
+    total_properties = Property.query.count()
+    total_users = User.query.count()
+    total_reviews = Review.query.count()
+    
+    # Monthly stats
+    current_month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    monthly_properties = Property.query.filter(Property.created_at >= current_month_start).count()
+    
+    # Collect stats in a dictionary
+    stats = {
+        'total_properties': total_properties,
+        'total_users': total_users,
+        'total_reviews': total_reviews,
+        'monthly_properties': monthly_properties
+    }
+    
+    # Recent properties
+    recent_properties = Property.query.order_by(desc(Property.created_at)).limit(10).all()
+    
+    # Recent users
+    recent_users = User.query.order_by(desc(User.created_at)).limit(10).all()
+    
+    return render_template('admin/dashboard.html', 
+                           user=current_user,
+                           stats=stats,
+                           recent_properties=recent_properties,
+                           recent_users=recent_users,
+                           active_tab='dashboard')
+
+@app.route('/admin/properties')
+@admin_required
+def admin_properties():
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '')
+    district = request.args.get('district', '')
+    property_type = request.args.get('property_type', '')
+    status = request.args.get('status', '')
+    
+    # Base query
+    query = Property.query
+    
+    # Apply filters
+    if keyword:
+        query = query.filter(or_(
+            Property.title.ilike(f'%{keyword}%'),
+            Property.description.ilike(f'%{keyword}%'),
+            Property.address.ilike(f'%{keyword}%')
+        ))
+    
+    if district:
+        query = query.filter(Property.district == district)
+    
+    if property_type:
+        query = query.filter(Property.property_type == property_type)
+    
+    if status == 'available':
+        query = query.filter(Property.is_available == True)
+    elif status == 'unavailable':
+        query = query.filter(Property.is_available == False)
+    
+    # Pagination
+    pagination = query.order_by(desc(Property.created_at)).paginate(page=page, per_page=20)
+    properties = pagination.items
+    
+    # Get districts for filter
+    districts = db.session.query(Property.district, func.count(Property.id))\
+        .group_by(Property.district)\
+        .order_by(func.count(Property.id).desc())\
+        .all()
+    
+    return render_template('admin/properties.html',
+                           user=current_user,
+                           properties=properties,
+                           pagination=pagination,
+                           districts=districts,
+                           active_tab='properties')
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '')
+    user_type = request.args.get('user_type', '')
+    sort = request.args.get('sort', 'newest')
+    
+    # Base query
+    query = User.query
+    
+    # Apply filters
+    if keyword:
+        query = query.filter(or_(
+            User.email.ilike(f'%{keyword}%'),
+            User.first_name.ilike(f'%{keyword}%'),
+            User.last_name.ilike(f'%{keyword}%')
+        ))
+    
+    if user_type:
+        query = query.filter(User.user_type == user_type)
+    
+    # Apply sorting
+    if sort == 'oldest':
+        query = query.order_by(User.created_at)
+    else:  # newest
+        query = query.order_by(desc(User.created_at))
+    
+    # Pagination
+    pagination = query.paginate(page=page, per_page=20)
+    users = pagination.items
+    
+    return render_template('admin/users.html',
+                           user=current_user,
+                           users=users,
+                           pagination=pagination,
+                           active_tab='users')
+
+@app.route('/admin/reviews')
+@admin_required
+def admin_reviews():
+    # Will implement in the next phase
+    flash('Tính năng này đang được phát triển.', 'info')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/settings')
+@admin_required
+def admin_settings():
+    # Will implement in the next phase
+    flash('Tính năng này đang được phát triển.', 'info')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/properties/<int:property_id>/edit')
+@admin_required
+def admin_property_edit(property_id):
+    # Will redirect to the standard property edit page
+    return redirect(url_for('edit_property', property_id=property_id))
+
+@app.route('/admin/properties/<int:property_id>/toggle', methods=['POST'])
+@admin_required
+def admin_property_toggle(property_id):
+    property = Property.query.get_or_404(property_id)
+    property.is_available = not property.is_available
+    db.session.commit()
+    
+    flash(f'Đã đổi trạng thái của "{property.title}" thành {"Có Sẵn" if property.is_available else "Không Có Sẵn"}.', 'success')
+    return redirect(url_for('admin_properties'))
+
+@app.route('/admin/properties/<int:property_id>/delete', methods=['POST'])
+@admin_required
+def admin_property_delete(property_id):
+    property = Property.query.get_or_404(property_id)
+    
+    # Delete associated images
+    for image in property.images:
+        # If image is stored on the server, delete the file
+        if image.url.startswith('/static/'):
+            try:
+                file_path = os.path.join(os.getcwd(), image.url[1:])  # Remove leading slash
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                app.logger.error(f"Error deleting image file: {e}")
+    
+    # Store property title for flash message
+    property_title = property.title
+    
+    # Delete property (cascade will delete images, favorites, etc.)
+    db.session.delete(property)
+    db.session.commit()
+    
+    flash(f'Đã xóa bất động sản "{property_title}".', 'success')
+    return redirect(url_for('admin_properties'))
+
+@app.route('/admin/users/<user_id>/edit')
+@admin_required
+def admin_user_edit(user_id):
+    # Will implement user edit page in the next phase
+    flash('Tính năng này đang được phát triển.', 'info')
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/users/<user_id>/detail')
+@admin_required
+def admin_user_detail(user_id):
+    # Will implement user details page in the next phase
+    flash('Tính năng này đang được phát triển.', 'info')
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/users/<user_id>/change-role', methods=['POST'])
+@admin_required
+def admin_user_change_role(user_id):
+    user = User.query.get_or_404(user_id)
+    user_type = request.form.get('user_type')
+    
+    if user_type in ['renter', 'landlord', 'admin']:
+        user.user_type = user_type
+        db.session.commit()
+        flash(f'Đã thay đổi vai trò của {user.first_name or user.email or "người dùng"} thành {user_type}.', 'success')
+    else:
+        flash('Vai trò không hợp lệ.', 'danger')
+    
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/users/<user_id>/delete', methods=['POST'])
+@admin_required
+def admin_user_delete(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Cannot delete self
+    if user.id == current_user.id:
+        flash('Bạn không thể xóa tài khoản của chính mình.', 'danger')
+        return redirect(url_for('admin_users'))
+    
+    # Store user info for flash message
+    user_name = user.first_name or user.email or "người dùng"
+    
+    # Delete user (cascade will delete their properties, reviews, etc.)
+    db.session.delete(user)
+    db.session.commit()
+    
+    flash(f'Đã xóa người dùng "{user_name}".', 'success')
+    return redirect(url_for('admin_users'))
+
 # 404 Error page
 @app.errorhandler(404)
 def page_not_found(e):
