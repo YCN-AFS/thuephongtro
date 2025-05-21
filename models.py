@@ -214,23 +214,3 @@ class Review(db.Model):
     
     property = db.relationship('Property', backref=db.backref('reviews', lazy=True, cascade="all, delete-orphan"))
     reviewer = db.relationship('User', foreign_keys=[reviewer_id])
-
-
-class Booking(db.Model):
-    __tablename__ = 'bookings'
-    id = db.Column(db.Integer, primary_key=True)
-    property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
-    renter_id = db.Column(db.String, db.ForeignKey('users.id'), nullable=False)
-    check_in_date = db.Column(db.Date, nullable=False)
-    check_out_date = db.Column(db.Date, nullable=False)
-    total_price = db.Column(db.Float, nullable=False)
-    num_guests = db.Column(db.Integer, nullable=False, default=1)
-    status = db.Column(db.String, nullable=False, default='pending')  # pending, confirmed, cancelled, completed
-    payment_status = db.Column(db.String, nullable=False, default='unpaid')  # unpaid, paid, refunded
-    special_requests = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    
-    # Relationships
-    property = db.relationship('Property', backref=db.backref('bookings', lazy=True))
-    renter = db.relationship('User', foreign_keys=[renter_id], backref=db.backref('bookings', lazy=True))

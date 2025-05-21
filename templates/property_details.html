@@ -30,8 +30,8 @@
                             <i class="{{ 'fas fa-heart text-danger' if is_favorite else 'far fa-heart' }}"></i>
                         </button>
                         <!-- Red Contact button that opens the modal -->
-                        <a href="#" class="btn btn-primary" style="background-color: #FF5A5F; border-color: #FF5A5F; color: white;" data-bs-toggle="modal" data-bs-target="#contactModal">
-                            <i class="fas fa-comment-alt me-2"></i> Contact
+                        <a href="#" class="btn" style="background-color: #FF5A5F; border-color: #FF5A5F; color: white;" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <i class="fas fa-envelope me-1"></i> Contact
                         </a>
                     {% endif %}
                 {% endif %}
@@ -419,7 +419,7 @@
                 
                 <!-- Contact Form -->
                 {% if user.is_authenticated and property.owner_id != user.id %}
-                    <div class="contact-form mb-4">
+                    <div class="contact-form">
                         <h4>Contact Landlord</h4>
                         <form id="contactLandlordForm" action="/property/{{ property.id }}/contact" method="POST">
                             <input type="hidden" name="property_id" value="{{ property.id }}">
@@ -433,55 +433,6 @@
                             </button>
                         </form>
                     </div>
-                    
-                    <!-- Booking Form -->
-                    {% if property.is_available %}
-                    <div class="booking-form">
-                        <h4 class="mb-3">Đặt phòng</h4>
-                        <form id="bookingForm" action="{{ url_for('book_property', property_id=property.id) }}" method="POST">
-                            <div class="mb-3">
-                                <label for="check_in_date" class="form-label">Ngày nhận phòng</label>
-                                <input type="date" class="form-control" id="check_in_date" name="check_in_date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="check_out_date" class="form-label">Ngày trả phòng</label>
-                                <input type="date" class="form-control" id="check_out_date" name="check_out_date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="num_guests" class="form-label">Số lượng khách</label>
-                                <input type="number" class="form-control" id="num_guests" name="num_guests" min="1" max="10" value="1">
-                            </div>
-                            <div class="mb-3">
-                                <label for="special_requests" class="form-label">Yêu cầu đặc biệt</label>
-                                <textarea class="form-control" id="special_requests" name="special_requests" rows="2" placeholder="Vui lòng cho biết nếu bạn có yêu cầu đặc biệt..."></textarea>
-                            </div>
-                            <div class="booking-summary mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>Giá thuê:</span>
-                                    <span class="fw-bold">{{ "{:,.0f}".format(property.price) }} VND/tháng</span>
-                                </div>
-                                <div id="totalPriceSection" class="d-none">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span>Số ngày:</span>
-                                        <span id="numDays">0</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="fw-bold">Tổng cộng:</span>
-                                        <span id="totalPrice" class="fw-bold text-danger">0 VND</span>
-                                    </div>
-                                    <input type="hidden" id="totalPriceInput" name="total_price" value="0">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn w-100" style="background-color: #FF5A5F; color: white;">
-                                <i class="fas fa-calendar-check me-2"></i> Đặt phòng ngay
-                            </button>
-                        </form>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Bất động sản này hiện không còn trống.
-                    </div>
-                    {% endif %}
                 {% elif property.owner_id == user.id %}
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i> This is your property listing.
@@ -669,120 +620,6 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('An error occurred while sending your message. Please try again.');
       });
     });
-  }
-});
-</script>
-
-<!-- Booking Form JavaScript -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const bookingForm = document.getElementById('bookingForm');
-  
-  if (bookingForm) {
-    const checkInDateInput = document.getElementById('check_in_date');
-    const checkOutDateInput = document.getElementById('check_out_date');
-    const numGuestsInput = document.getElementById('num_guests');
-    const totalPriceSection = document.getElementById('totalPriceSection');
-    const numDaysSpan = document.getElementById('numDays');
-    const totalPriceSpan = document.getElementById('totalPrice');
-    const totalPriceInput = document.getElementById('totalPriceInput');
-    
-    // Set minimum dates to today
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const formatDateForInput = (date) => {
-      return date.toISOString().split('T')[0];
-    };
-    
-    checkInDateInput.min = formatDateForInput(today);
-    checkOutDateInput.min = formatDateForInput(tomorrow);
-    
-    // When check-in date changes, ensure check-out date is after check-in
-    checkInDateInput.addEventListener('change', function() {
-      const checkInDate = new Date(this.value);
-      const checkOutDate = new Date(checkOutDateInput.value);
-      
-      // Set minimum check-out date to day after check-in
-      const minCheckOutDate = new Date(checkInDate);
-      minCheckOutDate.setDate(minCheckOutDate.getDate() + 1);
-      checkOutDateInput.min = formatDateForInput(minCheckOutDate);
-      
-      // If check-out date is before check-in date, reset it
-      if (checkOutDate <= checkInDate) {
-        checkOutDateInput.value = formatDateForInput(minCheckOutDate);
-      }
-      
-      calculateTotalPrice();
-    });
-    
-    // When check-out date changes, calculate total price
-    checkOutDateInput.addEventListener('change', calculateTotalPrice);
-    numGuestsInput.addEventListener('change', calculateTotalPrice);
-    
-    function calculateTotalPrice() {
-      const checkInDate = new Date(checkInDateInput.value);
-      const checkOutDate = new Date(checkOutDateInput.value);
-      
-      if (checkInDateInput.value && checkOutDateInput.value) {
-        // Calculate number of days
-        const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
-        const numDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        
-        if (numDays > 0) {
-          // Property price per month converted to days (assuming 30 days per month)
-          const propertyPrice = {{ property.price }};
-          const pricePerDay = propertyPrice / 30;
-          const totalPrice = pricePerDay * numDays;
-          
-          // Show total price section
-          totalPriceSection.classList.remove('d-none');
-          numDaysSpan.textContent = numDays;
-          totalPriceSpan.textContent = formatPrice(totalPrice);
-          totalPriceInput.value = totalPrice;
-        }
-      }
-    }
-    
-    function formatPrice(price) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price).replace('₫', 'VND');
-    }
-    
-    // Submit booking form
-    bookingForm.addEventListener('submit', function(event) {
-      if (!checkInDateInput.value || !checkOutDateInput.value) {
-        event.preventDefault();
-        alert('Vui lòng chọn ngày nhận và trả phòng.');
-        return;
-      }
-      
-      const checkInDate = new Date(checkInDateInput.value);
-      const checkOutDate = new Date(checkOutDateInput.value);
-      
-      if (checkOutDate <= checkInDate) {
-        event.preventDefault();
-        alert('Ngày trả phòng phải sau ngày nhận phòng.');
-        return;
-      }
-      
-      // If no total price calculated, do it now
-      if (totalPriceInput.value === '0') {
-        calculateTotalPrice();
-      }
-    });
-    
-    // Initialize with today's date for check-in if not set
-    if (!checkInDateInput.value) {
-      checkInDateInput.value = formatDateForInput(today);
-      
-      // Set check-out to tomorrow by default
-      if (!checkOutDateInput.value) {
-        checkOutDateInput.value = formatDateForInput(tomorrow);
-      }
-      
-      calculateTotalPrice();
-    }
   }
 });
 </script>

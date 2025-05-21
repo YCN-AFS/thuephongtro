@@ -58,10 +58,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="{{ url_for('profile') }}">Hồ Sơ</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('my_bookings') }}">Đặt Phòng Của Tôi</a></li>
-                                {% if user.user_type == 'landlord' %}
-                                    <li><a class="dropdown-item" href="{{ url_for('property_bookings') }}">Quản Lý Đặt Phòng</a></li>
-                                {% else %}
+                                {% if user.user_type != 'landlord' %}
                                     <li><a class="dropdown-item" href="{{ url_for('landlord_dashboard') }}">Trở Thành Chủ Nhà</a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
