@@ -259,22 +259,26 @@
 </section>
 
 <!-- Popular Areas Section -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-light" id="popular-areas">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2>Khu Vực Phổ Biến ở Biên Hòa</h2>
-                <p class="text-muted">Khám phá những khu vực được tìm kiếm nhiều nhất ở Biên Hòa</p>
-            </div>
+        <div class="section-heading">
+            <h2>Khu Vực Phổ Biến ở Biên Hòa</h2>
+            <p>Khám phá những khu vực được tìm kiếm nhiều nhất ở Biên Hòa</p>
         </div>
         <div class="row g-4">
             {% for district, count in districts[:6] %}
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <a href="{{ url_for('search', district=district) }}" class="text-decoration-none">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-body p-4">
-                                <h4>{{ district }}</h4>
-                                <p class="text-muted mb-0">{{ count }} bất động sản hiện có</p>
+                        <div class="card h-100 border-0 shadow-sm hover-effect">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0">{{ district }}</h4>
+                                    <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                                </div>
+                                <p class="text-muted">{{ count }} bất động sản hiện có</p>
+                                <div class="mt-auto text-end">
+                                    <span class="text-primary">Xem danh sách <i class="fas fa-arrow-right ms-1"></i></span>
+                                </div>
                             </div>
                         </div>
                     </a>
