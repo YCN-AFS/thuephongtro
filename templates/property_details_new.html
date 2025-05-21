@@ -8,8 +8,8 @@
         <div class="col-md-8">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}">Search</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Trang Chủ</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}">Tìm Kiếm</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ property.title }}</li>
                 </ol>
             </nav>
@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     {% if property.owner_id == user.id %}
                         <a href="{{ url_for('edit_property', property_id=property.id) }}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i> Edit
+                            <i class="fas fa-edit me-2"></i> Chỉnh Sửa
                         </a>
                     {% else %}
                         <button class="btn btn-outline-primary favorite-button" data-property-id="{{ property.id }}" title="{{ 'Remove from favorites' if is_favorite else 'Add to favorites' }}">
@@ -31,14 +31,14 @@
                         </button>
                     {% endif %}
                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
-                        <i class="fas fa-comment-alt me-2"></i> Contact
+                        <i class="fas fa-comment-alt me-2"></i> Liên Hệ
                     </a>
                 {% else %}
                     <a href="{{ url_for('replit_auth.login') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-heart me-2"></i> Save
+                        <i class="fas fa-heart me-2"></i> Lưu
                     </a>
                     <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary">
-                        <i class="fas fa-comment-alt me-2"></i> Contact
+                        <i class="fas fa-comment-alt me-2"></i> Liên Hệ
                     </a>
                 {% endif %}
             </div>
@@ -74,7 +74,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h4 class="card-title text-primary">{{ "{:,.0f}".format(property.price) }} VND<small class="text-muted">/month</small></h4>
+                    <h4 class="card-title text-primary">{{ "{:,.0f}".format(property.price) }} VND<small class="text-muted">/tháng</small></h4>
                     <div class="row g-2 mb-3">
                         <div class="col-4 text-center border-end">
                             <div class="feature-icon mb-2">
