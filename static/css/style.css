@@ -102,7 +102,7 @@ a:hover {
 /* Hero Section */
 .hero {
   padding: 6rem 0;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://pixabay.com/get/g3ab69c46ed49c15dca0fcd7bc9a9c3563ff402b1862127eefc5b2f99972a81306504688ef371f87c0d85337d34ca9f2d52b98879cb87885250e9152102489534_1280.jpg');
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/img/default-property.svg');
   background-size: cover;
   background-position: center;
   color: var(--white);
