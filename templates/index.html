@@ -1,32 +1,36 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Enhanced Hero Section -->
 <section class="hero">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 offset-md-2 text-center">
-                <h1>Tìm Ngôi Nhà Hoàn Hảo Tại Biên Hòa</h1>
-                <p>Khám phá bất động sản cho thuê phù hợp với lối sống của bạn tại thành phố sôi động của Đồng Nai.</p>
+            <div class="col-md-10 offset-md-1 text-center fade-in">
+                <h1 class="mb-4">Tìm Ngôi Nhà Hoàn Hảo Tại Biên Hòa</h1>
+                <p class="lead">Khám phá bất động sản cho thuê phù hợp với lối sống của bạn tại thành phố sôi động của Đồng Nai.</p>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-md-8 offset-md-2">
-                <div class="search-form">
+        <div class="row mt-5">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="search-form slide-up">
                     <form action="{{ url_for('search') }}" method="GET" id="search-form">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="district" class="form-label">Quận/Huyện</label>
-                                <select class="form-select" id="district" name="district">
+                        <div class="row g-4">
+                            <div class="col-lg-4 col-md-6">
+                                <label for="district" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Quận/Huyện
+                                </label>
+                                <select class="form-select shadow-sm" id="district" name="district">
                                     <option value="">Tất Cả Quận/Huyện</option>
                                     {% for district, count in districts %}
                                         <option value="{{ district }}">{{ district }} ({{ count }})</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="property_type" class="form-label">Loại Bất Động Sản</label>
-                                <select class="form-select" id="property_type" name="property_type">
+                            <div class="col-lg-4 col-md-6">
+                                <label for="property_type" class="form-label">
+                                    <i class="fas fa-home me-2 text-primary"></i>Loại Bất Động Sản
+                                </label>
+                                <select class="form-select shadow-sm" id="property_type" name="property_type">
                                     <option value="">Tất Cả Loại</option>
                                     <option value="apartment">Căn Hộ</option>
                                     <option value="house">Nhà</option>
@@ -34,9 +38,11 @@
                                     <option value="studio">Căn Hộ Studio</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label for="bedrooms" class="form-label">Phòng Ngủ</label>
-                                <select class="form-select" id="bedrooms" name="bedrooms">
+                            <div class="col-lg-4 col-md-6">
+                                <label for="bedrooms" class="form-label">
+                                    <i class="fas fa-bed me-2 text-primary"></i>Phòng Ngủ
+                                </label>
+                                <select class="form-select shadow-sm" id="bedrooms" name="bedrooms">
                                     <option value="">Bất Kỳ</option>
                                     <option value="1">1+</option>
                                     <option value="2">2+</option>
@@ -44,20 +50,23 @@
                                     <option value="4">4+</option>
                                 </select>
                             </div>
-                            <div class="col-md-8">
-                                <label class="form-label">Khoảng Giá (VND)</label>
+                            <div class="col-lg-8 col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-tag me-2 text-primary"></i>Khoảng Giá (VND)
+                                </label>
                                 <div class="row g-2">
-                                    <div class="col-6">
-                                        <input type="number" class="form-control" name="min_price" placeholder="Giá Tối Thiểu" min="0" step="500000">
+                                    <div class="col-sm-6">
+                                        <input type="number" class="form-control shadow-sm" name="min_price" placeholder="Giá Tối Thiểu" min="0" step="500000">
                                     </div>
-                                    <div class="col-6">
-                                        <input type="number" class="form-control" name="max_price" placeholder="Giá Tối Đa" min="0" step="500000">
+                                    <div class="col-sm-6">
+                                        <input type="number" class="form-control shadow-sm" name="max_price" placeholder="Giá Tối Đa" min="0" step="500000">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 text-center mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg px-5">
-                                    <i class="fas fa-search me-2"></i> Tìm Kiếm
+                            <div class="col-lg-4 col-md-12">
+                                <label class="form-label d-block opacity-0">Tìm Kiếm</label>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 shadow">
+                                    <i class="fas fa-search me-2"></i> Tìm Kiếm Nhà Ngay
                                 </button>
                             </div>
                         </div>
@@ -69,22 +78,25 @@
 </section>
 
 <!-- Featured Properties Section -->
-<section class="py-5">
+<section class="py-5" id="featured-properties">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2 class="text-center">Bất Động Sản Nổi Bật</h2>
-                <p class="text-center text-muted">Khám phá những lựa chọn hàng đầu của chúng tôi tại Biên Hòa</p>
-            </div>
+        <div class="section-heading mb-5">
+            <h2>Bất Động Sản Nổi Bật</h2>
+            <p>Khám phá những lựa chọn hàng đầu của chúng tôi tại Biên Hòa</p>
         </div>
 
         <div class="row g-4">
             {% if featured_properties %}
                 {% for property in featured_properties %}
-                    <div class="col-md-6 col-lg-3">
-                        <div class="property-card">
-                            <div class="property-image" style="background-image: url('{{ property.images[0].url if property.images else '/static/img/default-property.jpg' }}');">
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="property-card shadow-sm">
+                            <div class="property-image" style="background-image: url('{{ property.images[0].url if property.images else '/static/img/default-property.svg' }}');">
                                 <div class="property-price">{{ "{:,.0f}".format(property.price) }} VND/tháng</div>
+                                {% if property.is_available %}
+                                    <span class="badge bg-success position-absolute top-0 start-0 m-3">Có Sẵn</span>
+                                {% else %}
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-3">Đã Cho Thuê</span>
+                                {% endif %}
                             </div>
                             <div class="property-info">
                                 <h3 class="property-title">
@@ -98,26 +110,35 @@
                                     <span class="feature"><i class="fas fa-bath"></i> {{ property.bathrooms }}</span>
                                     <span class="feature"><i class="fas fa-ruler-combined"></i> {{ property.area }}m²</span>
                                 </div>
-                                <div class="mt-3">
-                                    <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary w-100">Xem Chi Tiết</a>
+                                <div class="d-flex mt-3 gap-2">
+                                    <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-outline-primary flex-grow-1">
+                                        <i class="fas fa-info-circle me-1"></i> Chi Tiết
+                                    </a>
+                                    {% if user.is_authenticated and user.id != property.owner_id %}
+                                    <button class="btn btn-outline-danger favorite-button" data-property-id="{{ property.id }}" title="Thêm vào yêu thích">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="col-12 text-center">
-                    <p class="text-muted">Hiện không có bất động sản nào.</p>
+                <div class="col-12 py-5 text-center">
+                    <div class="alert alert-info p-5 shadow-sm">
+                        <i class="fas fa-info-circle fa-3x mb-3 text-primary"></i>
+                        <h4 class="alert-heading">Không tìm thấy bất động sản</h4>
+                        <p class="mb-0">Hiện tại chưa có bất động sản nào được đăng tải. Vui lòng quay lại sau.</p>
+                    </div>
                 </div>
             {% endif %}
         </div>
 
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <a href="{{ url_for('search') }}" class="btn btn-secondary btn-lg px-5">
-                    Xem Tất Cả Bất Động Sản
-                </a>
-            </div>
+        <div class="text-center mt-5">
+            <a href="{{ url_for('search') }}" class="btn btn-secondary btn-lg px-5 shadow-sm">
+                <i class="fas fa-th-list me-2"></i> Xem Tất Cả Bất Động Sản
+            </a>
         </div>
     </div>
 </section>
@@ -125,64 +146,112 @@
 <!-- Why Choose Us Section -->
 <section class="py-5 bg-light">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2>Tại Sao Chọn BienHoa Rentals</h2>
-                <p class="text-muted">Chúng tôi giúp việc tìm ngôi nhà tiếp theo của bạn trở nên đơn giản và không căng thẳng</p>
-            </div>
+        <div class="section-heading">
+            <h2>Tại Sao Chọn BienHoa Rentals</h2>
+            <p>Chúng tôi giúp việc tìm ngôi nhà tiếp theo của bạn trở nên đơn giản và không căng thẳng</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 mt-2">
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
-                        <h4>Tìm Kiếm Dễ Dàng</h4>
-                        <p class="text-muted">Tìm bất động sản phù hợp với nhu cầu của bạn với bộ lọc tìm kiếm mạnh mẽ của chúng tôi.</p>
-                    </div>
+                <div class="feature-card h-100">
+                    <i class="fas fa-search"></i>
+                    <h4>Tìm Kiếm Dễ Dàng</h4>
+                    <p>Tìm bất động sản phù hợp với nhu cầu của bạn với bộ lọc tìm kiếm mạnh mẽ của chúng tôi. Duyệt theo khu vực, giá cả, hoặc tiện nghi.</p>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-primary mt-3">Tìm Kiếm Ngay</a>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-robot fa-3x text-primary mb-3"></i>
-                        <h4>Trợ Lý AI</h4>
-                        <p class="text-muted">Nhận các đề xuất bất động sản được cá nhân hóa với trợ lý thông minh của chúng tôi.</p>
-                    </div>
+                <div class="feature-card h-100">
+                    <i class="fas fa-robot"></i>
+                    <h4>Trợ Lý AI</h4>
+                    <p>Nhận các đề xuất bất động sản được cá nhân hóa với trợ lý thông minh của chúng tôi. Đặt câu hỏi và nhận câu trả lời ngay lập tức.</p>
+                    <button onclick="window.aiChat.openChat()" class="btn btn-outline-primary mt-3">Hỏi AI Trợ Lý</button>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <i class="fas fa-house-user fa-3x text-primary mb-3"></i>
-                        <h4>Chuyên Môn Địa Phương</h4>
-                        <p class="text-muted">Nền tảng của chúng tôi chuyên về bất động sản tại Biên Hòa với hiểu biết sâu sắc về địa phương.</p>
-                    </div>
+                <div class="feature-card h-100">
+                    <i class="fas fa-house-user"></i>
+                    <h4>Chuyên Môn Địa Phương</h4>
+                    <p>Nền tảng của chúng tôi chuyên về bất động sản tại Biên Hòa với hiểu biết sâu sắc về địa phương. Chúng tôi có kiến thức về từng khu vực.</p>
+                    <a href="#popular-areas" class="btn btn-outline-primary mt-3">Xem Khu Vực</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Become a Landlord Section -->
-<section class="py-5">
-    <div class="container">
+<!-- Become a Landlord Section - Call to Action -->
+<section class="cta-section py-5 my-4">
+    <div class="container py-3">
         <div class="row align-items-center">
-            <div class="col-md-6">
-                <img src="/static/img/default-property.svg" alt="Trở thành Chủ Nhà" class="img-fluid rounded">
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <div class="position-relative rounded-lg overflow-hidden shadow-lg">
+                    <img src="/static/img/default-property.svg" alt="Trở thành Chủ Nhà" class="img-fluid">
+                    <div class="position-absolute top-0 end-0 bg-primary text-white py-2 px-4 m-3 rounded-pill">
+                        <span class="fw-bold">Miễn Phí Đăng Ký</span>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h2>Trở Thành Chủ Nhà</h2>
-                <p class="text-muted">Bạn có nhà ở Biên Hòa muốn cho thuê? Tham gia nền tảng của chúng tôi và tiếp cận hàng nghìn người thuê tiềm năng.</p>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Đăng tin miễn phí</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Kết nối với người thuê đã xác minh</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Quản lý tất cả bất động sản của bạn tại một nơi</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Nhận báo cáo và phân tích</li>
-                </ul>
+            <div class="col-lg-7 ps-lg-5">
+                <h2 class="display-5 fw-bold mb-4">Trở Thành Chủ Nhà</h2>
+                <p class="lead mb-4">Bạn có nhà ở Biên Hòa muốn cho thuê? Tham gia nền tảng của chúng tôi và tiếp cận hàng nghìn người thuê tiềm năng.</p>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-1">Đăng tin miễn phí</h5>
+                                <p class="text-muted mb-0">Không có phí ẩn</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-check text-white"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-1">Người thuê đã xác minh</h5>
+                                <p class="text-muted mb-0">An toàn và đáng tin cậy</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-tasks text-white"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-1">Quản lý tập trung</h5>
+                                <p class="text-muted mb-0">Tất cả bất động sản tại một nơi</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h5 class="mb-1">Báo cáo và phân tích</h5>
+                                <p class="text-muted mb-0">Theo dõi hiệu suất cho thuê</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% if user.is_authenticated %}
-                    <a href="{{ url_for('landlord_dashboard') }}" class="btn btn-primary btn-lg mt-3">Đăng Tin Ngay</a>
+                    <a href="{{ url_for('landlord_dashboard') }}" class="btn btn-primary btn-lg px-5 shadow">
+                        <i class="fas fa-plus-circle me-2"></i> Đăng Tin Ngay
+                    </a>
                 {% else %}
-                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary btn-lg mt-3">Bắt Đầu Ngay</a>
+                    <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary btn-lg px-5 shadow">
+                        <i class="fas fa-sign-in-alt me-2"></i> Bắt Đầu Ngay
+                    </a>
                 {% endif %}
             </div>
         </div>
