@@ -417,13 +417,15 @@
                 {% if user.is_authenticated and property.owner_id != user.id %}
                     <div class="contact-form">
                         <h4>Contact Landlord</h4>
-                        <form>
+                        <form id="contactLandlordForm" action="{{ url_for('contact_landlord', property_id=property.id) }}" method="POST">
+                            <input type="hidden" name="property_id" value="{{ property.id }}">
+                            <input type="hidden" name="owner_id" value="{{ property.owner_id }}">
                             <div class="mb-3">
                                 <label for="message" class="form-label">Message</label>
-                                <textarea class="form-control" id="message" rows="4" placeholder="I'm interested in this property..."></textarea>
+                                <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tôi quan tâm đến bất động sản này..." required></textarea>
                             </div>
-                            <button type="button" class="btn btn-primary w-100" onclick="alert('This feature is coming soon!')">
-                                <i class="fas fa-paper-plane me-2"></i> Send Message
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fas fa-paper-plane me-2"></i> Liên hệ chủ nhà
                             </button>
                         </form>
                     </div>
