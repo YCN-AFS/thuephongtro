@@ -62,13 +62,13 @@
                         </div>
                         
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-filter me-2"></i> Apply Filters
+                            <i class="fas fa-filter me-2"></i> Áp Dụng Bộ Lọc
                         </button>
                     </form>
                     
                     <div class="mt-3">
                         <a href="{{ url_for('search') }}" class="btn btn-outline-secondary w-100">
-                            <i class="fas fa-times me-2"></i> Clear Filters
+                            <i class="fas fa-times me-2"></i> Xóa Bộ Lọc
                         </a>
                     </div>
                 </div>
@@ -76,10 +76,10 @@
             
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5>Need help?</h5>
-                    <p>Let our AI assistant help you find the perfect property based on your preferences.</p>
+                    <h5>Cần trợ giúp?</h5>
+                    <p>Hãy để trợ lý AI của chúng tôi giúp bạn tìm căn hộ phù hợp theo nhu cầu của bạn.</p>
                     <button class="btn btn-outline-primary w-100" onclick="window.aiChat.openChat()">
-                        <i class="fas fa-robot me-2"></i> Ask AI Assistant
+                        <i class="fas fa-robot me-2"></i> Hỏi Trợ Lý AI
                     </button>
                 </div>
             </div>
@@ -141,14 +141,14 @@
                 <div class="card shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                        <h3>No properties found</h3>
-                        <p class="text-muted mb-4">We couldn't find any properties matching your search criteria.</p>
+                        <h3>Không tìm thấy căn hộ nào</h3>
+                        <p class="text-muted mb-4">Chúng tôi không thể tìm thấy căn hộ nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
                         <div class="d-flex justify-content-center gap-3">
                             <a href="{{ url_for('search') }}" class="btn btn-primary">
-                                <i class="fas fa-times me-2"></i> Clear Filters
+                                <i class="fas fa-times me-2"></i> Xóa Bộ Lọc
                             </a>
                             <button class="btn btn-outline-primary" onclick="window.aiChat.openChat()">
-                                <i class="fas fa-robot me-2"></i> Ask AI for Help
+                                <i class="fas fa-robot me-2"></i> Hỏi Trợ Lý AI
                             </button>
                         </div>
                     </div>
