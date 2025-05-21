@@ -186,15 +186,15 @@
                                             <td>{{ property.property_type|capitalize }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Area</th>
+                                            <th>Diện Tích</th>
                                             <td>{{ property.area }} m²</td>
                                         </tr>
                                         <tr>
-                                            <th>Bedrooms</th>
+                                            <th>Phòng Ngủ</th>
                                             <td>{{ property.bedrooms }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Bathrooms</th>
+                                            <th>Phòng Tắm</th>
                                             <td>{{ property.bathrooms }}</td>
                                         </tr>
                                     </tbody>
@@ -204,22 +204,22 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>Price</th>
-                                            <td>{{ "{:,.0f}".format(property.price) }} VND/month</td>
+                                            <th>Giá</th>
+                                            <td>{{ "{:,.0f}".format(property.price) }} VND/tháng</td>
                                         </tr>
                                         <tr>
-                                            <th>Furnishing</th>
-                                            <td>{{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</td>
+                                            <th>Nội Thất</th>
+                                            <td>{{ property.furnishing|capitalize if property.furnishing else 'Chưa xác định' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Available From</th>
+                                            <th>Có Sẵn Từ</th>
                                             <td>{{ property.available_from.strftime('%d %B, %Y') }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Status</th>
+                                            <th>Tình Trạng</th>
                                             <td>
                                                 <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
-                                                    {{ 'Available' if property.is_available else 'Not Available' }}
+                                                    {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -231,15 +231,15 @@
 
                     <!-- Amenities Tab -->
                     <div class="tab-pane fade" id="amenities" role="tabpanel" aria-labelledby="amenities-tab">
-                        <h3 class="mb-3">Amenities</h3>
+                        <h3 class="mb-3">Tiện Ích</h3>
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item {{ 'text-muted' if not property.has_air_conditioning else '' }}">
-                                        <i class="{{ 'fas' if property.has_air_conditioning else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_air_conditioning else '' }}"></i> Air Conditioning
+                                        <i class="{{ 'fas' if property.has_air_conditioning else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_air_conditioning else '' }}"></i> Điều Hòa
                                     </li>
                                     <li class="list-group-item {{ 'text-muted' if not property.has_parking else '' }}">
-                                        <i class="{{ 'fas' if property.has_parking else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_parking else '' }}"></i> Parking
+                                        <i class="{{ 'fas' if property.has_parking else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_parking else '' }}"></i> Bãi Đỗ Xe
                                     </li>
                                     <li class="list-group-item {{ 'text-muted' if not property.has_wifi else '' }}">
                                         <i class="{{ 'fas' if property.has_wifi else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_wifi else '' }}"></i> WiFi
