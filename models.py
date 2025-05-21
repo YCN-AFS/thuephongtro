@@ -15,12 +15,16 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String, nullable=True)
     last_name = db.Column(db.String, nullable=True)
     profile_image_url = db.Column(db.String, nullable=True)
-    user_type = db.Column(db.String, default='renter')  # 'landlord' or 'renter'
+    user_type = db.Column(db.String, default='renter')  # 'landlord', 'renter', or 'admin'
     phone = db.Column(db.String, nullable=True)
     bio = db.Column(db.Text, nullable=True)
     address = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    @property
+    def is_admin(self):
+        return self.user_type == 'admin'
 
     # Relationships
     properties = db.relationship('Property', backref='owner', lazy=True)

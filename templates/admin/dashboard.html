@@ -1,0 +1,323 @@
+{% extends 'layout.html' %}
+
+{% block title %}Bảng Điều Khiển Quản Trị - BienHoa Rentals{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quản Trị</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action {% if active_tab == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                    </a>
+                    <a href="{{ url_for('admin_properties') }}" class="list-group-item list-group-item-action {% if active_tab == 'properties' %}active{% endif %}">
+                        <i class="fas fa-home me-2"></i> Quản Lý Nhà
+                    </a>
+                    <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action {% if active_tab == 'users' %}active{% endif %}">
+                        <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action {% if active_tab == 'reviews' %}active{% endif %}">
+                        <i class="fas fa-star me-2"></i> Đánh Giá
+                    </a>
+                    <a href="{{ url_for('admin_settings') }}" class="list-group-item list-group-item-action {% if active_tab == 'settings' %}active{% endif %}">
+                        <i class="fas fa-cog me-2"></i> Cài Đặt Hệ Thống
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Bảng Điều Khiển Quản Trị</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Stats Overview -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-primary text-white shadow">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase mb-1">Tổng Số Nhà</h6>
+                                            <h2 class="mb-0">{{ stats.total_properties }}</h2>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-home fa-3x opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-success text-white shadow">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase mb-1">Người Dùng</h6>
+                                            <h2 class="mb-0">{{ stats.total_users }}</h2>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-users fa-3x opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-info text-white shadow">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase mb-1">Đánh Giá</h6>
+                                            <h2 class="mb-0">{{ stats.total_reviews }}</h2>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-star fa-3x opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-warning text-white shadow">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-uppercase mb-1">Tháng Này</h6>
+                                            <h2 class="mb-0">{{ stats.monthly_properties }}</h2>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-calendar-alt fa-3x opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Listings -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Bất Động Sản Mới Nhất</h5>
+                                <a href="{{ url_for('admin_properties') }}" class="btn btn-sm btn-primary">Xem Tất Cả</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>Tên Bất Động Sản</th>
+                                        <th>Khu Vực</th>
+                                        <th>Chủ Nhà</th>
+                                        <th>Giá</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Trạng Thái</th>
+                                        <th style="width: 100px;">Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for property in recent_properties %}
+                                    <tr>
+                                        <td>{{ property.id }}</td>
+                                        <td>
+                                            <a href="{{ url_for('property_details', property_id=property.id) }}" class="fw-medium">
+                                                {{ property.title }}
+                                            </a>
+                                        </td>
+                                        <td>{{ property.district }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if property.owner.profile_image_url %}
+                                                <img src="{{ property.owner.profile_image_url }}" class="rounded-circle me-2" width="30" height="30">
+                                                {% else %}
+                                                <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                                    <i class="fas fa-user text-secondary"></i>
+                                                </div>
+                                                {% endif %}
+                                                <div>{{ property.owner.first_name or 'User' }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ "{:,.0f}".format(property.price) }} VND/tháng</td>
+                                        <td>{{ property.created_at.strftime('%d/%m/%Y') }}</td>
+                                        <td>
+                                            <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
+                                                {{ 'Có Sẵn' if property.is_available else 'Không Có Sẵn' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Xem">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('admin_property_edit', property_id=property.id) }}" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Chỉnh Sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button data-property-id="{{ property.id }}" class="btn btn-sm btn-outline-danger delete-property-btn" data-bs-toggle="tooltip" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Users -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Người Dùng Mới</h5>
+                                <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-primary">Xem Tất Cả</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Người Dùng</th>
+                                        <th>Email</th>
+                                        <th>Ngày Đăng Ký</th>
+                                        <th>Loại Tài Khoản</th>
+                                        <th style="width: 100px;">Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in recent_users %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if user.profile_image_url %}
+                                                <img src="{{ user.profile_image_url }}" class="rounded-circle me-2" width="30" height="30">
+                                                {% else %}
+                                                <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                                    <i class="fas fa-user text-secondary"></i>
+                                                </div>
+                                                {% endif %}
+                                                <div>{{ user.first_name or 'User' }} {{ user.last_name or '' }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+                                        <td>
+                                            <span class="badge {{ 'bg-primary' if user.user_type == 'landlord' else 'bg-info' if user.user_type == 'renter' else 'bg-dark' }}">
+                                                {{ 'Chủ Nhà' if user.user_type == 'landlord' else 'Người Thuê' if user.user_type == 'renter' else 'Quản Trị Viên' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <a href="{{ url_for('admin_user_edit', user_id=user.id) }}" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Chỉnh Sửa">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button data-user-id="{{ user.id }}" class="btn btn-sm btn-outline-warning change-role-btn" data-bs-toggle="tooltip" title="Đổi Vai Trò">
+                                                    <i class="fas fa-user-tag"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Property Confirmation Modal -->
+<div class="modal fade" id="deletePropertyModal" tabindex="-1" aria-labelledby="deletePropertyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePropertyModalLabel">Xác Nhận Xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa bất động sản này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deletePropertyForm" method="POST">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change User Role Modal -->
+<div class="modal fade" id="changeRoleModal" tabindex="-1" aria-labelledby="changeRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeRoleModalLabel">Thay Đổi Vai Trò Người Dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="changeRoleForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Chọn Vai Trò</label>
+                        <select class="form-select" id="userRole" name="user_type">
+                            <option value="renter">Người Thuê</option>
+                            <option value="landlord">Chủ Nhà</option>
+                            <option value="admin">Quản Trị Viên</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Delete property button handler
+    const deleteButtons = document.querySelectorAll('.delete-property-btn');
+    const deleteForm = document.getElementById('deletePropertyForm');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const propertyId = this.dataset.propertyId;
+            deleteForm.action = `/admin/properties/${propertyId}/delete`;
+            new bootstrap.Modal(document.getElementById('deletePropertyModal')).show();
+        });
+    });
+    
+    // Change role button handler
+    const roleButtons = document.querySelectorAll('.change-role-btn');
+    const roleForm = document.getElementById('changeRoleForm');
+    
+    roleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            roleForm.action = `/admin/users/${userId}/change-role`;
+            new bootstrap.Modal(document.getElementById('changeRoleModal')).show();
+        });
+    });
+    
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

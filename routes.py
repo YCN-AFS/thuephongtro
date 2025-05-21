@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, request, jsonify, flash, session, abort
 from sqlalchemy import func, or_, and_, desc
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 import os
 import base64
@@ -9,12 +9,26 @@ from io import BytesIO
 from PIL import Image
 from urllib.parse import urlparse
 import logging
+from functools import wraps
 
 from app import app, db
 from models import User, Property, PropertyImage, Favorite, Message, ChatWithAI, UserChat, Review
 from replit_auth import require_login, make_replit_blueprint, current_user, replit
 from ai_assistant import get_ai_response, get_property_recommendations
 from google_auth import google_auth
+
+# Admin decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Bạn cần đăng nhập để truy cập trang này.', 'danger')
+            return redirect(url_for('index'))
+        if not current_user.is_admin:
+            flash('Bạn không có quyền truy cập trang này.', 'danger')
+            return abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Register Replit Auth blueprint
 app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
