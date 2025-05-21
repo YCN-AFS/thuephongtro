@@ -29,6 +29,10 @@
                         <button class="btn btn-outline-primary favorite-button" data-property-id="{{ property.id }}" title="{{ 'Remove from favorites' if is_favorite else 'Add to favorites' }}">
                             <i class="{{ 'fas fa-heart text-danger' if is_favorite else 'far fa-heart' }}"></i>
                         </button>
+                        <!-- Add Contact button that opens the modal -->
+                        <button class="btn btn-danger" id="contactButton" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <i class="fas fa-comment-alt me-2"></i> Contact
+                        </button>
                     {% endif %}
                 {% endif %}
                 <button class="btn btn-primary" onclick="window.aiChat.openChat()">
@@ -500,6 +504,41 @@
         </div>
     </div>
 </div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="contactModalLabel">Liên hệ với Chủ nhà</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if user.is_authenticated and property.owner_id != user.id %}
+          <form id="contactModalForm" action="/property/{{ property.id }}/contact" method="POST">
+            <div class="mb-3">
+              <label for="contactMessage" class="form-label">Tin nhắn của bạn</label>
+              <textarea class="form-control" id="contactMessage" name="message" rows="5" placeholder="Tôi quan tâm đến bất động sản này và muốn biết thêm thông tin..." required></textarea>
+            </div>
+            <div class="text-end">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+              <button type="submit" class="btn btn-danger">Gửi tin nhắn</button>
+            </div>
+          </form>
+        {% elif property.owner_id == user.id %}
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> Đây là bài đăng của bạn.
+          </div>
+        {% else %}
+          <div class="alert alert-warning">
+            <i class="fas fa-lock me-2"></i> Vui lòng <a href="{{ url_for('replit_auth.login') }}">đăng nhập</a> để liên hệ với chủ nhà.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
