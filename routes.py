@@ -505,22 +505,33 @@ def contact_landlord(property_id):
     
     # Make sure user is not contacting themselves
     if property.owner_id == current_user.id:
-        flash('Bạn không thể gửi tin nhắn đến chính mình.', 'warning')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'status': 'error', 'message': 'You cannot contact yourself as the owner of this property.'}), 400
+        flash('You cannot contact yourself as the owner of this property.', 'warning')
         return redirect(url_for('property_details', property_id=property_id))
     
-    # Get the message content
+    # Get form data
+    name = request.form.get('name', '')
+    email = request.form.get('email', '')
     message_text = request.form.get('message', '')
+    
+    # Validate required fields
     if not message_text:
-        flash('Vui lòng nhập nội dung tin nhắn.', 'danger')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'status': 'error', 'message': 'Please enter a message.'}), 400
+        flash('Please enter a message.', 'danger')
         return redirect(url_for('property_details', property_id=property_id))
     
     try:
+        # Format message with sender details
+        formatted_message = f"Message from: {name} ({email})\n\n{message_text}"
+        
         # Create a new message
         new_message = Message()
         new_message.sender_id = current_user.id
         new_message.receiver_id = property.owner_id
         new_message.property_id = property_id
-        new_message.message = message_text
+        new_message.message = formatted_message
         new_message.is_read = False
         db.session.add(new_message)
         db.session.flush()  # Get the ID of the new message
@@ -560,11 +571,22 @@ def contact_landlord(property_id):
         
         db.session.commit()
         
-        flash('Tin nhắn của bạn đã được gửi thành công đến chủ nhà.', 'success')
+        # Handle AJAX request for dynamic modal behavior
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'success',
+                'message': 'Your message has been sent to the landlord. They will contact you soon.'
+            })
+            
+        flash('Your message has been sent to the landlord. They will contact you soon.', 'success')
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error sending message: {str(e)}")
-        flash(f'Lỗi khi gửi tin nhắn: {str(e)}', 'danger')
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'status': 'error', 'message': f'Error sending message: {str(e)}'}), 500
+            
+        flash(f'Error sending message: {str(e)}', 'danger')
     
     return redirect(url_for('property_details', property_id=property_id))
 
