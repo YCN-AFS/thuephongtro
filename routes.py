@@ -516,14 +516,14 @@ def contact_landlord(property_id):
     
     try:
         # Create a new message
-        new_message = Message(
-            sender_id=current_user.id,
-            receiver_id=property.owner_id,
-            property_id=property_id,
-            message=message_text,
-            is_read=False
-        )
+        new_message = Message()
+        new_message.sender_id = current_user.id
+        new_message.receiver_id = property.owner_id
+        new_message.property_id = property_id
+        new_message.message = message_text
+        new_message.is_read = False
         db.session.add(new_message)
+        db.session.flush()  # Get the ID of the new message
         
         # Update or create a user chat entry
         user_chat = UserChat.query.filter_by(
@@ -532,10 +532,9 @@ def contact_landlord(property_id):
         ).first()
         
         if not user_chat:
-            user_chat = UserChat(
-                user_id=current_user.id,
-                chat_with_id=property.owner_id
-            )
+            user_chat = UserChat()
+            user_chat.user_id = current_user.id
+            user_chat.chat_with_id = property.owner_id
             db.session.add(user_chat)
         
         # Update last message and timestamp
@@ -549,10 +548,9 @@ def contact_landlord(property_id):
         ).first()
         
         if not landlord_chat:
-            landlord_chat = UserChat(
-                user_id=property.owner_id,
-                chat_with_id=current_user.id
-            )
+            landlord_chat = UserChat()
+            landlord_chat.user_id = property.owner_id
+            landlord_chat.chat_with_id = current_user.id
             db.session.add(landlord_chat)
         
         # Update landlord's chat
