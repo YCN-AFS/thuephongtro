@@ -10,6 +10,7 @@ from PIL import Image
 from urllib.parse import urlparse
 import logging
 from functools import wraps
+from werkzeug.utils import secure_filename
 
 from app import app, db
 from models import User, Property, PropertyImage, Favorite, Message, ChatWithAI, UserChat, Review
@@ -960,24 +961,33 @@ def admin_settings():
     # Create an empty settings dictionary for the template
     settings = {}
     
-    # Try to get settings from database or default values
+    # Try to get settings from database
     try:
-        # This would be replaced with actual settings retrieval logic
-        # For now we'll use some default settings
-        settings = {
-            'site_name': 'BienHoa Rentals',
-            'site_tagline': 'Tìm nhà dễ dàng tại Biên Hòa',
-            'contact_email': 'contact@bienhoarentals.com',
-            'contact_phone': '0123 456 789',
-            'currency': 'VND',
-            'default_city': 'Biên Hòa',
-            'default_province': 'Đồng Nai',
-            'default_country': 'Việt Nam',
-            'primary_color': '#FF5A5F',
-            'secondary_color': '#00A699',
-            'theme': 'light',
-            'site_description': 'BienHoa Rentals cung cấp dịch vụ tìm kiếm và cho thuê bất động sản tại Biên Hòa, Đồng Nai.'
-        }
+        from models import Setting
+        settings = Setting.get_all()
+        
+        # If no settings exist, use defaults
+        if not settings:
+            default_settings = {
+                'site_name': 'BienHoa Rentals',
+                'site_tagline': 'Tìm nhà dễ dàng tại Biên Hòa',
+                'contact_email': 'contact@bienhoarentals.com',
+                'contact_phone': '0123 456 789',
+                'currency': 'VND',
+                'default_city': 'Biên Hòa',
+                'default_province': 'Đồng Nai',
+                'default_country': 'Việt Nam',
+                'primary_color': '#FF5A5F',
+                'secondary_color': '#00A699',
+                'theme': 'light',
+                'site_description': 'BienHoa Rentals cung cấp dịch vụ tìm kiếm và cho thuê bất động sản tại Biên Hòa, Đồng Nai.'
+            }
+            
+            # Save default settings to database
+            for key, value in default_settings.items():
+                Setting.set(key, value)
+            
+            settings = default_settings
     except Exception as e:
         app.logger.error(f"Error getting settings: {e}")
     
@@ -996,20 +1006,217 @@ def admin_settings_update():
     # Get the settings type from the form
     settings_type = request.form.get('settings_type')
     
-    # Process the settings update request
-    # This would be replaced with actual settings update logic
-    # For now we'll just flash a success message
+    try:
+        from models import Setting
+        
+        # Process different types of settings
+        if settings_type == 'general':
+            # General settings
+            keys_to_update = [
+                'site_name', 'site_tagline', 'site_description',
+                'contact_email', 'contact_phone',
+                'default_city', 'default_province', 'default_country', 'currency'
+            ]
+            
+            # Update each setting
+            for key in keys_to_update:
+                if key in request.form:
+                    Setting.set(key, request.form.get(key))
+                    
+        elif settings_type == 'appearance':
+            # Appearance settings
+            keys_to_update = [
+                'primary_color', 'secondary_color',
+                'font_family', 'theme'
+            ]
+            
+            # Update each setting
+            for key in keys_to_update:
+                if key in request.form:
+                    Setting.set(key, request.form.get(key))
+                    
+            # Handle file uploads
+            if 'site_logo' in request.files and request.files['site_logo'].filename:
+                # Process logo upload
+                file = request.files['site_logo']
+                filename = secure_filename(file.filename)
+                upload_path = os.path.join('static', 'img', 'admin', filename)
+                os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+                file.save(upload_path)
+                Setting.set('site_logo', f'/{upload_path}')
+                
+            if 'favicon' in request.files and request.files['favicon'].filename:
+                # Process favicon upload
+                file = request.files['favicon']
+                filename = secure_filename(file.filename)
+                upload_path = os.path.join('static', 'img', 'admin', filename)
+                os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+                file.save(upload_path)
+                Setting.set('favicon', f'/{upload_path}')
+                
+            if 'hero_image' in request.files and request.files['hero_image'].filename:
+                # Process hero image upload
+                file = request.files['hero_image']
+                filename = secure_filename(file.filename)
+                upload_path = os.path.join('static', 'img', 'admin', filename)
+                os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+                file.save(upload_path)
+                Setting.set('hero_image', f'/{upload_path}')
+                
+        elif settings_type == 'advanced':
+            # Advanced settings
+            keys_to_update = [
+                'google_maps_api_key', 'openai_api_key', 'ai_model',
+                'upload_path', 'max_upload_size', 'image_sizing'
+            ]
+            
+            # Update each setting
+            for key in keys_to_update:
+                if key in request.form:
+                    Setting.set(key, request.form.get(key))
+                    
+            # Boolean settings
+            bool_settings = ['enable_recaptcha', 'enable_maintenance']
+            for key in bool_settings:
+                Setting.set(key, '1' if key in request.form else '0')
+                
+            # Update reCAPTCHA settings
+            if 'recaptcha_site_key' in request.form:
+                Setting.set('recaptcha_site_key', request.form.get('recaptcha_site_key'))
+            if 'recaptcha_secret_key' in request.form:
+                Setting.set('recaptcha_secret_key', request.form.get('recaptcha_secret_key'))
+        
+        flash('Cài đặt đã được cập nhật thành công.', 'success')
+        
+    except Exception as e:
+        app.logger.error(f"Error updating settings: {e}")
+        flash(f'Đã xảy ra lỗi khi cập nhật cài đặt: {str(e)}', 'danger')
     
-    flash(f'Cài đặt đã được cập nhật thành công.', 'success')
     return redirect(url_for('admin_settings'))
 
 @app.route('/admin/database/backup', methods=['POST'])
 @admin_required
 def admin_database_backup():
-    # This would be replaced with actual database backup logic
-    # For now we'll just flash a success message
-    
-    flash('Đã tạo bản sao lưu cơ sở dữ liệu thành công.', 'success')
+    try:
+        # Create backup directory if it doesn't exist
+        backup_dir = os.path.join('static', 'backups')
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        # Generate a timestamp for the backup filename
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_filename = f'backup_{timestamp}.json'
+        backup_path = os.path.join(backup_dir, backup_filename)
+        
+        # Get data from database
+        data = {
+            'users': [],
+            'properties': [],
+            'property_images': [],
+            'reviews': [],
+            'settings': []
+        }
+        
+        # Export users
+        from models import User
+        users = User.query.all()
+        for user in users:
+            user_data = {
+                'id': user.id,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'profile_image_url': user.profile_image_url,
+                'user_type': user.user_type,
+                'phone': user.phone,
+                'bio': user.bio,
+                'address': user.address,
+                'created_at': user.created_at.isoformat() if user.created_at else None
+            }
+            data['users'].append(user_data)
+            
+        # Export properties
+        from models import Property
+        properties = Property.query.all()
+        for prop in properties:
+            property_data = {
+                'id': prop.id,
+                'owner_id': prop.owner_id,
+                'title': prop.title,
+                'description': prop.description,
+                'property_type': prop.property_type,
+                'price': prop.price,
+                'address': prop.address,
+                'district': prop.district,
+                'city': prop.city,
+                'province': prop.province,
+                'country': prop.country,
+                'latitude': prop.latitude,
+                'longitude': prop.longitude,
+                'area': prop.area,
+                'bedrooms': prop.bedrooms,
+                'bathrooms': prop.bathrooms,
+                'furnishing': prop.furnishing,
+                'available_from': prop.available_from.isoformat() if prop.available_from else None,
+                'is_available': prop.is_available,
+                'has_air_conditioning': prop.has_air_conditioning,
+                'has_parking': prop.has_parking,
+                'has_wifi': prop.has_wifi,
+                'has_washing_machine': prop.has_washing_machine,
+                'has_refrigerator': prop.has_refrigerator,
+                'has_tv': prop.has_tv,
+                'has_kitchen': prop.has_kitchen,
+                'has_balcony': prop.has_balcony,
+                'created_at': prop.created_at.isoformat() if prop.created_at else None
+            }
+            data['properties'].append(property_data)
+            
+        # Export property images
+        from models import PropertyImage
+        images = PropertyImage.query.all()
+        for img in images:
+            image_data = {
+                'id': img.id,
+                'property_id': img.property_id,
+                'url': img.url,
+                'is_primary': img.is_primary,
+                'created_at': img.created_at.isoformat() if img.created_at else None
+            }
+            data['property_images'].append(image_data)
+            
+        # Export reviews
+        from models import Review
+        reviews = Review.query.all()
+        for review in reviews:
+            review_data = {
+                'id': review.id,
+                'property_id': review.property_id,
+                'reviewer_id': review.reviewer_id,
+                'rating': review.rating,
+                'comment': review.comment,
+                'created_at': review.created_at.isoformat() if review.created_at else None
+            }
+            data['reviews'].append(review_data)
+            
+        # Export settings
+        from models import Setting
+        settings = Setting.query.all()
+        for setting in settings:
+            setting_data = {
+                'key': setting.key,
+                'value': setting.value
+            }
+            data['settings'].append(setting_data)
+            
+        # Write the data to a JSON file
+        with open(backup_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+            
+        flash('Đã tạo bản sao lưu cơ sở dữ liệu thành công.', 'success')
+        
+    except Exception as e:
+        app.logger.error(f"Error creating backup: {e}")
+        flash(f'Đã xảy ra lỗi khi tạo bản sao lưu: {str(e)}', 'danger')
+        
     return redirect(url_for('admin_settings'))
 
 @app.route('/admin/database/restore', methods=['POST'])
