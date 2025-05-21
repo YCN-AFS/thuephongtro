@@ -496,6 +496,80 @@ def delete_property(property_id):
         flash(f'Lỗi khi xoá bất động sản: {str(e)}', 'danger')
         return redirect(url_for('property_details', property_id=property_id))
 
+# Contact landlord - send a message
+@app.route('/property/<int:property_id>/contact', methods=['POST'])
+@require_login
+def contact_landlord(property_id):
+    # Get the property
+    property = Property.query.get_or_404(property_id)
+    
+    # Make sure user is not contacting themselves
+    if property.owner_id == current_user.id:
+        flash('Bạn không thể gửi tin nhắn đến chính mình.', 'warning')
+        return redirect(url_for('property_details', property_id=property_id))
+    
+    # Get the message content
+    message_text = request.form.get('message', '')
+    if not message_text:
+        flash('Vui lòng nhập nội dung tin nhắn.', 'danger')
+        return redirect(url_for('property_details', property_id=property_id))
+    
+    try:
+        # Create a new message
+        new_message = Message(
+            sender_id=current_user.id,
+            receiver_id=property.owner_id,
+            property_id=property_id,
+            message=message_text,
+            is_read=False
+        )
+        db.session.add(new_message)
+        
+        # Update or create a user chat entry
+        user_chat = UserChat.query.filter_by(
+            user_id=current_user.id,
+            chat_with_id=property.owner_id
+        ).first()
+        
+        if not user_chat:
+            user_chat = UserChat(
+                user_id=current_user.id,
+                chat_with_id=property.owner_id
+            )
+            db.session.add(user_chat)
+        
+        # Update last message and timestamp
+        user_chat.last_message_id = new_message.id
+        user_chat.updated_at = datetime.now()
+        
+        # Also create/update the other side of the conversation (for the landlord)
+        landlord_chat = UserChat.query.filter_by(
+            user_id=property.owner_id,
+            chat_with_id=current_user.id
+        ).first()
+        
+        if not landlord_chat:
+            landlord_chat = UserChat(
+                user_id=property.owner_id,
+                chat_with_id=current_user.id
+            )
+            db.session.add(landlord_chat)
+        
+        # Update landlord's chat
+        landlord_chat.last_message_id = new_message.id
+        landlord_chat.unread_count = landlord_chat.unread_count + 1
+        landlord_chat.updated_at = datetime.now()
+        
+        db.session.commit()
+        
+        flash('Tin nhắn của bạn đã được gửi thành công đến chủ nhà.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error sending message: {str(e)}")
+        flash(f'Lỗi khi gửi tin nhắn: {str(e)}', 'danger')
+    
+    return redirect(url_for('property_details', property_id=property_id))
+
 # User profile page
 @app.route('/profile', methods=['GET', 'POST'])
 @require_login
