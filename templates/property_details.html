@@ -417,7 +417,7 @@
                 {% if user.is_authenticated and property.owner_id != user.id %}
                     <div class="contact-form">
                         <h4>Contact Landlord</h4>
-                        <form id="contactLandlordForm" action="{{ url_for('contact_landlord', property_id=property.id) }}" method="POST">
+                        <form id="contactLandlordForm" action="/property/{{ property.id }}/contact" method="POST">
                             <input type="hidden" name="property_id" value="{{ property.id }}">
                             <input type="hidden" name="owner_id" value="{{ property.owner_id }}">
                             <div class="mb-3">
