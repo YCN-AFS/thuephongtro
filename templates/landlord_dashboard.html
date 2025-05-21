@@ -1,17 +1,17 @@
 {% extends 'layout.html' %}
 
-{% block title %}Landlord Dashboard - BienHoa Rentals{% endblock %}
+{% block title %}Bảng Điều Khiển Chủ Nhà - BienHoa Rentals{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1>Landlord Dashboard</h1>
-            <p class="text-muted">Manage your rental properties and view statistics</p>
+            <h1>Bảng Điều Khiển Chủ Nhà</h1>
+            <p class="text-muted">Quản lý nhà cho thuê và xem thống kê</p>
         </div>
         <div class="col-md-4 text-md-end">
             <a href="{{ url_for('create_property') }}" class="btn btn-primary">
-                <i class="fas fa-plus-circle me-2"></i> Add New Property
+                <i class="fas fa-plus-circle me-2"></i> Thêm Nhà Mới
             </a>
         </div>
     </div>
@@ -20,22 +20,22 @@
     <div class="dashboard-stats mb-5">
         <div class="stat-card">
             <h2>{{ properties|length }}</h2>
-            <p>Total Properties</p>
+            <p>Tổng Số Nhà</p>
         </div>
         <div class="stat-card">
             <h2>{{ properties|selectattr('is_available', 'equalto', true)|list|length }}</h2>
-            <p>Available Properties</p>
+            <p>Nhà Đang Cho Thuê</p>
         </div>
         <div class="stat-card">
             <h2>{{ properties|selectattr('is_available', 'equalto', false)|list|length }}</h2>
-            <p>Rented Properties</p>
+            <p>Nhà Đã Cho Thuê</p>
         </div>
     </div>
 
     <!-- Property Listings -->
     <div class="card shadow-sm">
         <div class="card-header bg-white">
-            <h3 class="mb-0">Your Properties</h3>
+            <h3 class="mb-0">Nhà Của Bạn</h3>
         </div>
         <div class="card-body">
             {% if properties %}
@@ -43,12 +43,12 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Property</th>
-                                <th>Type</th>
-                                <th>Location</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Bất Động Sản</th>
+                                <th>Loại</th>
+                                <th>Vị Trí</th>
+                                <th>Giá</th>
+                                <th>Tình Trạng</th>
+                                <th>Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,7 +70,7 @@
                                                     {{ property.title }}
                                                 </a>
                                                 <div class="small text-muted">
-                                                    {{ property.bedrooms }} bed, {{ property.bathrooms }} bath, {{ property.area }}m²
+                                                    {{ property.bedrooms }} phòng ngủ, {{ property.bathrooms }} phòng tắm, {{ property.area }}m²
                                                 </div>
                                             </div>
                                         </div>
