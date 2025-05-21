@@ -1,0 +1,42 @@
+/* Custom styles for RoomRental */
+
+/* Fix for red contact button */
+.btn-danger {
+  background-color: #FF5A5F !important;
+  border-color: #FF5A5F !important;
+}
+
+.btn-danger:hover, 
+.btn-danger:focus, 
+.btn-danger:active {
+  background-color: #e6484e !important;
+  border-color: #e6484e !important;
+}
+
+/* Property image fixes */
+.property-card-image {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px 8px 0 0;
+}
+
+.property-detail-image {
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+}
+
+/* Default property images when none available */
+.default-property-image-1 {
+  background-image: url('/static/img/properties/default-property-1.jpg');
+}
+
+.default-property-image-2 {
+  background-image: url('/static/img/properties/default-property-2.jpg');
+}
+
+.default-property-image-3 {
+  background-image: url('/static/img/properties/default-property-3.jpg');
+}
