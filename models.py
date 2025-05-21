@@ -1,9 +1,10 @@
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
-from sqlalchemy import UniqueConstraint
+
 from app import db
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+from flask_login import UserMixin
+from sqlalchemy import UniqueConstraint, ForeignKey, func
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
@@ -14,30 +15,24 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String, nullable=True)
     last_name = db.Column(db.String, nullable=True)
     profile_image_url = db.Column(db.String, nullable=True)
-    user_type = db.Column(db.String, default='renter')  # 'landlord', 'renter', or 'admin'
+    user_type = db.Column(db.String, default='renter')  # 'landlord' or 'renter'
     phone = db.Column(db.String, nullable=True)
     bio = db.Column(db.Text, nullable=True)
     address = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    
-    @property
-    def is_admin(self):
-        return self.user_type == 'admin'
 
     # Relationships
     properties = db.relationship('Property', backref='owner', lazy=True)
     favorites = db.relationship('Favorite', backref='user', lazy=True)
 
 
-# (IMPORTANT) This table is mandatory for OAuth with Replit Auth.
-# It's used by flask-dance to store OAuth tokens.
+# (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 class OAuth(OAuthConsumerMixin, db.Model):
     user_id = db.Column(db.String, db.ForeignKey(User.id))
     browser_session_key = db.Column(db.String, nullable=False)
     user = db.relationship(User)
 
-    # Unique constraint based on user_id, session_key and provider
     __table_args__ = (UniqueConstraint(
         'user_id',
         'browser_session_key',
@@ -67,7 +62,7 @@ class Property(db.Model):
     furnishing = db.Column(db.String(50), nullable=True)  # unfurnished, semi-furnished, fully-furnished
     available_from = db.Column(db.Date, nullable=False)
     is_available = db.Column(db.Boolean, default=True)
-
+    
     # Amenities
     has_air_conditioning = db.Column(db.Boolean, default=False)
     has_parking = db.Column(db.Boolean, default=False)
@@ -77,43 +72,68 @@ class Property(db.Model):
     has_tv = db.Column(db.Boolean, default=False)
     has_kitchen = db.Column(db.Boolean, default=False)
     has_balcony = db.Column(db.Boolean, default=False)
-
-    # Timestamps
+    
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-
+    
     # Relationships
     images = db.relationship('PropertyImage', backref='property', lazy=True, cascade="all, delete-orphan")
     favorites = db.relationship('Favorite', backref='property', lazy=True, cascade="all, delete-orphan")
-    reviews = db.relationship('Review', backref='property', lazy=True, cascade="all, delete-orphan")
-
+    # reviews relationship is added by the Review model with backref
+    
+    @property
     def average_rating(self):
         """Calculate average rating for this property"""
-        if not self.reviews:
+        if not self.reviews or len(self.reviews) == 0:
             return 0
-        return sum(review.rating for review in self.reviews) / len(self.reviews)
+        return round(sum(review.rating for review in self.reviews) / len(self.reviews), 1)
     
+    @property
     def rating_count(self):
         """Get the number of ratings for this property"""
-        return len(self.reviews)
+        return len(self.reviews) if self.reviews else 0
     
     def to_dict(self):
         """Convert property to dictionary format for API responses"""
         return {
             'id': self.id,
             'title': self.title,
-            'property_type': self.property_type,
+            'description': self.description,
             'price': self.price,
             'address': self.address,
             'district': self.district,
             'city': self.city,
+            'province': self.province,
+            'area': self.area,
             'bedrooms': self.bedrooms,
             'bathrooms': self.bathrooms,
-            'area': self.area,
+            'property_type': self.property_type,
+            'furnishing': self.furnishing,
+            'available_from': self.available_from.isoformat() if self.available_from else None,
             'is_available': self.is_available,
-            'image_url': self.images[0].url if self.images else None,
-            'average_rating': self.average_rating(),
-            'rating_count': self.rating_count()
+            'images': [img.url for img in self.images],
+            'owner': {
+                'id': self.owner.id,
+                'name': f"{self.owner.first_name} {self.owner.last_name}".strip() or "User",
+                'phone': self.owner.phone,
+                'profile_image': self.owner.profile_image_url
+            },
+            'amenities': {
+                'air_conditioning': self.has_air_conditioning,
+                'parking': self.has_parking,
+                'wifi': self.has_wifi,
+                'washing_machine': self.has_washing_machine,
+                'refrigerator': self.has_refrigerator,
+                'tv': self.has_tv,
+                'kitchen': self.has_kitchen,
+                'balcony': self.has_balcony
+            },
+            'ratings': {
+                'average': self.average_rating,
+                'count': self.rating_count
+            },
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
         }
 
 
@@ -133,7 +153,6 @@ class Favorite(db.Model):
     property_id = db.Column(db.Integer, db.ForeignKey('properties.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     
-    # Ensure a user can only favorite a property once
     __table_args__ = (
         UniqueConstraint('user_id', 'property_id', name='uq_user_property'),
     )
@@ -149,7 +168,6 @@ class Message(db.Model):
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     
-    # Relationships
     sender = db.relationship('User', foreign_keys=[sender_id])
     receiver = db.relationship('User', foreign_keys=[receiver_id])
     property = db.relationship('Property', foreign_keys=[property_id])
@@ -164,12 +182,10 @@ class UserChat(db.Model):
     unread_count = db.Column(db.Integer, default=0)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
-    # Relationships
     user = db.relationship('User', foreign_keys=[user_id])
     chat_with = db.relationship('User', foreign_keys=[chat_with_id])
     last_message = db.relationship('Message', foreign_keys=[last_message_id])
     
-    # Ensure a user can only have one chat with another user
     __table_args__ = (
         UniqueConstraint('user_id', 'chat_with_id', name='uq_user_chat_with'),
     )
@@ -183,10 +199,9 @@ class ChatWithAI(db.Model):
     response = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     
-    # Relationship
     user = db.relationship('User', foreign_keys=[user_id])
-
-
+    
+    
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
@@ -197,42 +212,5 @@ class Review(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
-    # Relationships
+    property = db.relationship('Property', backref=db.backref('reviews', lazy=True, cascade="all, delete-orphan"))
     reviewer = db.relationship('User', foreign_keys=[reviewer_id])
-
-
-class Setting(db.Model):
-    __tablename__ = 'settings'
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(100), unique=True, nullable=False)
-    value = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-
-    @classmethod
-    def get(cls, key, default=None):
-        """Get a setting value by key"""
-        setting = cls.query.filter_by(key=key).first()
-        if setting:
-            return setting.value
-        return default
-    
-    @classmethod
-    def set(cls, key, value):
-        """Set a setting value by key"""
-        setting = cls.query.filter_by(key=key).first()
-        if setting:
-            setting.value = value
-        else:
-            setting = cls(key=key, value=value)
-            db.session.add(setting)
-        db.session.commit()
-        return setting
-    
-    @classmethod
-    def get_all(cls):
-        """Get all settings as a dictionary"""
-        settings = {}
-        for setting in cls.query.all():
-            settings[setting.key] = setting.value
-        return settings

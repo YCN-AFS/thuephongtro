@@ -113,7 +113,7 @@
                                 {% for property in favorites %}
                                     <div class="col-md-6">
                                         <div class="property-card">
-                                            <div class="property-image" style="background-image: url('{{ property.images[0].url if property.images else '/static/img/default-property.svg' }}');">
+                                            <div class="property-image" style="background-image: url('{{ property.images[0].url if property.images else 'https://pixabay.com/get/g42f931ecb58762a33b28eea42149ea8048d743915478c2331a5a36343a1a8d9461ed6ed14be306dd5945c24ad347f0d560eddd76f8ca7c0de4c6bab2038fc7b0_1280.jpg' }}');">
                                                 <div class="property-price">{{ "{:,.0f}".format(property.price) }} VND/month</div>
                                             </div>
                                             <div class="property-info">

@@ -8,8 +8,8 @@
         <div class="col-md-8">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Trang Chủ</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}">Tìm Kiếm</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('search') }}">Search</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ property.title }}</li>
                 </ol>
             </nav>
@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                     {% if property.owner_id == user.id %}
                         <a href="{{ url_for('edit_property', property_id=property.id) }}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i> Chỉnh Sửa
+                            <i class="fas fa-edit me-2"></i> Edit
                         </a>
                     {% else %}
                         <button class="btn btn-outline-primary favorite-button" data-property-id="{{ property.id }}" title="{{ 'Remove from favorites' if is_favorite else 'Add to favorites' }}">
@@ -31,14 +31,14 @@
                         </button>
                     {% endif %}
                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
-                        <i class="fas fa-comment-alt me-2"></i> Liên Hệ
+                        <i class="fas fa-comment-alt me-2"></i> Contact
                     </a>
                 {% else %}
                     <a href="{{ url_for('replit_auth.login') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-heart me-2"></i> Lưu
+                        <i class="fas fa-heart me-2"></i> Save
                     </a>
                     <a href="{{ url_for('replit_auth.login') }}" class="btn btn-primary">
-                        <i class="fas fa-comment-alt me-2"></i> Liên Hệ
+                        <i class="fas fa-comment-alt me-2"></i> Contact
                     </a>
                 {% endif %}
             </div>
@@ -74,7 +74,7 @@
         <div class="col-md-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h4 class="card-title text-primary">{{ "{:,.0f}".format(property.price) }} VND<small class="text-muted">/tháng</small></h4>
+                    <h4 class="card-title text-primary">{{ "{:,.0f}".format(property.price) }} VND<small class="text-muted">/month</small></h4>
                     <div class="row g-2 mb-3">
                         <div class="col-4 text-center border-end">
                             <div class="feature-icon mb-2">
@@ -86,29 +86,29 @@
                             <div class="feature-icon mb-2">
                                 <i class="fas fa-bed"></i>
                             </div>
-                            <p class="mb-0">{{ property.bedrooms }} phòng ngủ</p>
+                            <p class="mb-0">{{ property.bedrooms }} bed</p>
                         </div>
                         <div class="col-4 text-center">
                             <div class="feature-icon mb-2">
                                 <i class="fas fa-bath"></i>
                             </div>
-                            <p class="mb-0">{{ property.bathrooms }} phòng tắm</p>
+                            <p class="mb-0">{{ property.bathrooms }} bath</p>
                         </div>
                     </div>
                     <div class="mt-3">
                         <div class="mb-2">
                             <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }} mb-2">
-                                {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
+                                {{ 'Available' if property.is_available else 'Not Available' }}
                             </span>
-                            <span class="text-muted ms-2">Từ ngày {{ property.available_from.strftime('%d %B, %Y') }}</span>
+                            <span class="text-muted ms-2">From {{ property.available_from.strftime('%d %B, %Y') }}</span>
                         </div>
                         <div class="mb-2">
                             <i class="fas fa-user me-2 text-muted"></i> 
-                            <span>Đăng bởi {{ property.owner.first_name if property.owner.first_name else 'Chủ nhà' }}</span>
+                            <span>Posted by {{ property.owner.first_name if property.owner.first_name else 'Owner' }}</span>
                         </div>
                         <div>
                             <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                            <span>Đăng vào ngày {{ property.created_at.strftime('%d %B, %Y') }}</span>
+                            <span>Posted on {{ property.created_at.strftime('%d %B, %Y') }}</span>
                         </div>
                     </div>
                 </div>
@@ -118,16 +118,16 @@
             <div class="property-detail-info mb-4">
                 <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Tổng Quan</button>
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Chi Tiết</button>
+                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Details</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Tiện Ích</button>
+                        <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Amenities</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Vị Trí</button>
+                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Location</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
@@ -141,28 +141,28 @@
                 <div class="tab-content p-4" id="propertyTabContent">
                     <!-- Overview Tab -->
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-                        <h3 class="mb-3">Thông tin về căn hộ này</h3>
+                        <h3 class="mb-3">About this property</h3>
                         <p>{{ property.description }}</p>
                         
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <h4>Chi Tiết Căn Hộ</h4>
+                                <h4>Property Details</h4>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2"><i class="fas fa-home me-2"></i> <strong>Loại:</strong> {{ property.property_type|capitalize }}</li>
-                                    <li class="mb-2"><i class="fas fa-ruler-combined me-2"></i> <strong>Diện tích:</strong> {{ property.area }} m²</li>
-                                    <li class="mb-2"><i class="fas fa-bed me-2"></i> <strong>Phòng ngủ:</strong> {{ property.bedrooms }}</li>
-                                    <li class="mb-2"><i class="fas fa-bath me-2"></i> <strong>Phòng tắm:</strong> {{ property.bathrooms }}</li>
-                                    <li class="mb-2"><i class="fas fa-couch me-2"></i> <strong>Nội thất:</strong> {{ property.furnishing|capitalize if property.furnishing else 'Chưa xác định' }}</li>
+                                    <li class="mb-2"><i class="fas fa-home me-2"></i> <strong>Type:</strong> {{ property.property_type|capitalize }}</li>
+                                    <li class="mb-2"><i class="fas fa-ruler-combined me-2"></i> <strong>Area:</strong> {{ property.area }} m²</li>
+                                    <li class="mb-2"><i class="fas fa-bed me-2"></i> <strong>Bedrooms:</strong> {{ property.bedrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-bath me-2"></i> <strong>Bathrooms:</strong> {{ property.bathrooms }}</li>
+                                    <li class="mb-2"><i class="fas fa-couch me-2"></i> <strong>Furnishing:</strong> {{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h4>Giá & Tình Trạng</h4>
+                                <h4>Price & Availability</h4>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2"><i class="fas fa-tag me-2"></i> <strong>Giá:</strong> {{ "{:,.0f}".format(property.price) }} VND/tháng</li>
-                                    <li class="mb-2"><i class="fas fa-calendar-check me-2"></i> <strong>Có sẵn từ:</strong> {{ property.available_from.strftime('%d %B, %Y') }}</li>
-                                    <li class="mb-2"><i class="fas fa-check-circle me-2 {{ 'text-success' if property.is_available else 'text-danger' }}"></i> <strong>Tình trạng:</strong> 
+                                    <li class="mb-2"><i class="fas fa-tag me-2"></i> <strong>Price:</strong> {{ "{:,.0f}".format(property.price) }} VND/month</li>
+                                    <li class="mb-2"><i class="fas fa-calendar-check me-2"></i> <strong>Available from:</strong> {{ property.available_from.strftime('%d %B, %Y') }}</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle me-2 {{ 'text-success' if property.is_available else 'text-danger' }}"></i> <strong>Status:</strong> 
                                         <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
-                                            {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
+                                            {{ 'Available' if property.is_available else 'Not Available' }}
                                         </span>
                                     </li>
                                 </ul>
@@ -172,29 +172,29 @@
                     
                     <!-- Details Tab -->
                     <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <h3 class="mb-3">Chi Tiết Căn Hộ</h3>
+                        <h3 class="mb-3">Property Details</h3>
                         <div class="row">
                             <div class="col-md-6">
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>Mã Căn Hộ</th>
+                                            <th>Property ID</th>
                                             <td>{{ property.id }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Loại Căn Hộ</th>
+                                            <th>Property Type</th>
                                             <td>{{ property.property_type|capitalize }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Diện Tích</th>
+                                            <th>Area</th>
                                             <td>{{ property.area }} m²</td>
                                         </tr>
                                         <tr>
-                                            <th>Phòng Ngủ</th>
+                                            <th>Bedrooms</th>
                                             <td>{{ property.bedrooms }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Phòng Tắm</th>
+                                            <th>Bathrooms</th>
                                             <td>{{ property.bathrooms }}</td>
                                         </tr>
                                     </tbody>
@@ -204,22 +204,22 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>Giá</th>
-                                            <td>{{ "{:,.0f}".format(property.price) }} VND/tháng</td>
+                                            <th>Price</th>
+                                            <td>{{ "{:,.0f}".format(property.price) }} VND/month</td>
                                         </tr>
                                         <tr>
-                                            <th>Nội Thất</th>
-                                            <td>{{ property.furnishing|capitalize if property.furnishing else 'Chưa xác định' }}</td>
+                                            <th>Furnishing</th>
+                                            <td>{{ property.furnishing|capitalize if property.furnishing else 'Not specified' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Có Sẵn Từ</th>
+                                            <th>Available From</th>
                                             <td>{{ property.available_from.strftime('%d %B, %Y') }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Tình Trạng</th>
+                                            <th>Status</th>
                                             <td>
                                                 <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }}">
-                                                    {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
+                                                    {{ 'Available' if property.is_available else 'Not Available' }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -231,21 +231,21 @@
 
                     <!-- Amenities Tab -->
                     <div class="tab-pane fade" id="amenities" role="tabpanel" aria-labelledby="amenities-tab">
-                        <h3 class="mb-3">Tiện Ích</h3>
+                        <h3 class="mb-3">Amenities</h3>
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item {{ 'text-muted' if not property.has_air_conditioning else '' }}">
-                                        <i class="{{ 'fas' if property.has_air_conditioning else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_air_conditioning else '' }}"></i> Điều Hòa
+                                        <i class="{{ 'fas' if property.has_air_conditioning else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_air_conditioning else '' }}"></i> Air Conditioning
                                     </li>
                                     <li class="list-group-item {{ 'text-muted' if not property.has_parking else '' }}">
-                                        <i class="{{ 'fas' if property.has_parking else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_parking else '' }}"></i> Bãi Đỗ Xe
+                                        <i class="{{ 'fas' if property.has_parking else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_parking else '' }}"></i> Parking
                                     </li>
                                     <li class="list-group-item {{ 'text-muted' if not property.has_wifi else '' }}">
                                         <i class="{{ 'fas' if property.has_wifi else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_wifi else '' }}"></i> WiFi
                                     </li>
                                     <li class="list-group-item {{ 'text-muted' if not property.has_washing_machine else '' }}">
-                                        <i class="{{ 'fas' if property.has_washing_machine else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_washing_machine else '' }}"></i> Máy Giặt
+                                        <i class="{{ 'fas' if property.has_washing_machine else 'far' }} fa-square-check me-2 {{ 'text-success' if property.has_washing_machine else '' }}"></i> Washing Machine
                                     </li>
                                 </ul>
                             </div>
