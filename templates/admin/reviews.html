@@ -1,0 +1,345 @@
+{% extends 'layout.html' %}
+
+{% block title %}Quản Lý Đánh Giá - Admin BienHoa Rentals{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quản Trị</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action {% if active_tab == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                    </a>
+                    <a href="{{ url_for('admin_properties') }}" class="list-group-item list-group-item-action {% if active_tab == 'properties' %}active{% endif %}">
+                        <i class="fas fa-home me-2"></i> Quản Lý Nhà
+                    </a>
+                    <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action {% if active_tab == 'users' %}active{% endif %}">
+                        <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                    </a>
+                    <a href="{{ url_for('admin_reviews') }}" class="list-group-item list-group-item-action {% if active_tab == 'reviews' %}active{% endif %}">
+                        <i class="fas fa-star me-2"></i> Đánh Giá
+                    </a>
+                    <a href="{{ url_for('admin_settings') }}" class="list-group-item list-group-item-action {% if active_tab == 'settings' %}active{% endif %}">
+                        <i class="fas fa-cog me-2"></i> Cài Đặt Hệ Thống
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Quản Lý Đánh Giá</h4>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Search and Filter -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Tìm Kiếm & Lọc</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{ url_for('admin_reviews') }}" method="GET">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="form-label">Từ Khóa</label>
+                                                    <input type="text" name="keyword" class="form-control" placeholder="Tìm theo nội dung đánh giá..." value="{{ request.args.get('keyword', '') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label">Đánh Giá</label>
+                                                    <select name="rating" class="form-select">
+                                                        <option value="">Tất Cả</option>
+                                                        <option value="5" {% if request.args.get('rating') == '5' %}selected{% endif %}>5 Sao</option>
+                                                        <option value="4" {% if request.args.get('rating') == '4' %}selected{% endif %}>4 Sao</option>
+                                                        <option value="3" {% if request.args.get('rating') == '3' %}selected{% endif %}>3 Sao</option>
+                                                        <option value="2" {% if request.args.get('rating') == '2' %}selected{% endif %}>2 Sao</option>
+                                                        <option value="1" {% if request.args.get('rating') == '1' %}selected{% endif %}>1 Sao</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label">Sắp Xếp Theo</label>
+                                                    <select name="sort" class="form-select">
+                                                        <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Mới Nhất</option>
+                                                        <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Cũ Nhất</option>
+                                                        <option value="rating_high" {% if request.args.get('sort') == 'rating_high' %}selected{% endif %}>Đánh Giá Cao → Thấp</option>
+                                                        <option value="rating_low" {% if request.args.get('sort') == 'rating_low' %}selected{% endif %}>Đánh Giá Thấp → Cao</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">&nbsp;</label>
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-search me-2"></i> Tìm Kiếm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">&nbsp;</label>
+                                                <div class="d-grid">
+                                                    <a href="{{ url_for('admin_reviews') }}" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-sync me-2"></i> Đặt Lại
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle border">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bất Động Sản</th>
+                                    <th>Người Đánh Giá</th>
+                                    <th>Đánh Giá</th>
+                                    <th>Nội Dung</th>
+                                    <th>Ngày Đánh Giá</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in reviews %}
+                                <tr>
+                                    <td>{{ review.id }}</td>
+                                    <td>
+                                        <a href="{{ url_for('property_details', property_id=review.property_id) }}" class="fw-semibold text-decoration-none">
+                                            {{ review.property.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if review.reviewer.profile_image_url %}
+                                            <img src="{{ review.reviewer.profile_image_url }}" class="rounded-circle me-2" width="30" height="30">
+                                            {% else %}
+                                            <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                                <i class="fas fa-user text-secondary"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>{{ review.reviewer.first_name or review.reviewer.email or 'User' }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= review.rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="ms-2">{{ review.rating }}.0</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            {{ review.comment or 'Không có nội dung' }}
+                                        </div>
+                                    </td>
+                                    <td>{{ review.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-primary view-review-btn" 
+                                                   data-review-id="{{ review.id }}" 
+                                                   data-review-content="{{ review.comment }}"
+                                                   data-property-title="{{ review.property.title }}"
+                                                   data-reviewer-name="{{ review.reviewer.first_name or review.reviewer.email or 'User' }}"
+                                                   data-review-date="{{ review.created_at.strftime('%d/%m/%Y %H:%M') }}"
+                                                   data-review-rating="{{ review.rating }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-review-btn" 
+                                                   data-review-id="{{ review.id }}"
+                                                   data-property-title="{{ review.property.title }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if not reviews %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-star fa-4x text-muted mb-3"></i>
+                        <h4>Không Tìm Thấy Đánh Giá Nào</h4>
+                        <p class="text-muted">Chưa có đánh giá nào hoặc không có đánh giá phù hợp với bộ lọc.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Pagination -->
+                    {% if pagination and pagination.pages > 1 %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {{ 'disabled' if pagination.page == 1 else '' }}">
+                                <a class="page-link" href="{{ url_for('admin_reviews', page=pagination.page-1, **request.args) if pagination.page > 1 else '#' }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            
+                            {% for p in range(1, pagination.pages + 1) %}
+                                {% if p == pagination.page %}
+                                    <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                                {% elif p >= pagination.page - 2 and p <= pagination.page + 2 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_reviews', page=p, **request.args) }}">{{ p }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <li class="page-item {{ 'disabled' if pagination.page == pagination.pages else '' }}">
+                                <a class="page-link" href="{{ url_for('admin_reviews', page=pagination.page+1, **request.args) if pagination.page < pagination.pages else '#' }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Review Detail Modal -->
+<div class="modal fade" id="viewReviewModal" tabindex="-1" aria-labelledby="viewReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewReviewModalLabel">Chi Tiết Đánh Giá</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Bất Động Sản:</strong> <span id="modalPropertyTitle"></span></p>
+                        <p class="mb-1"><strong>Người Đánh Giá:</strong> <span id="modalReviewerName"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Ngày Đánh Giá:</strong> <span id="modalReviewDate"></span></p>
+                        <p class="mb-1">
+                            <strong>Đánh Giá:</strong> 
+                            <span id="modalRatingStars" class="ms-2"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Nội Dung Đánh Giá</h6>
+                    </div>
+                    <div class="card-body">
+                        <p id="modalReviewContent" class="mb-0"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <form id="deleteReviewModalForm" method="POST">
+                    <button type="submit" class="btn btn-danger">Xóa Đánh Giá</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Review Confirmation Modal -->
+<div class="modal fade" id="deleteReviewModal" tabindex="-1" aria-labelledby="deleteReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteReviewModalLabel">Xác Nhận Xóa Đánh Giá</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa đánh giá này?</p>
+                <p class="mb-0"><strong>Bất động sản:</strong> <span id="deleteReviewPropertyTitle"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteReviewForm" method="POST">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View review button handler
+    const viewButtons = document.querySelectorAll('.view-review-btn');
+    const deleteReviewModalForm = document.getElementById('deleteReviewModalForm');
+    
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.dataset.reviewId;
+            const reviewContent = this.dataset.reviewContent;
+            const propertyTitle = this.dataset.propertyTitle;
+            const reviewerName = this.dataset.reviewerName;
+            const reviewDate = this.dataset.reviewDate;
+            const reviewRating = this.dataset.reviewRating;
+            
+            // Set modal content
+            document.getElementById('modalPropertyTitle').textContent = propertyTitle;
+            document.getElementById('modalReviewerName').textContent = reviewerName;
+            document.getElementById('modalReviewDate').textContent = reviewDate;
+            document.getElementById('modalReviewContent').textContent = reviewContent || 'Không có nội dung đánh giá';
+            
+            // Generate star rating
+            const starsContainer = document.getElementById('modalRatingStars');
+            starsContainer.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const starIcon = document.createElement('i');
+                starIcon.className = i <= reviewRating ? 'fas fa-star text-warning' : 'far fa-star text-muted';
+                starsContainer.appendChild(starIcon);
+            }
+            starsContainer.innerHTML += ` <span>${reviewRating}.0</span>`;
+            
+            // Set delete form action
+            deleteReviewModalForm.action = `/admin/reviews/${reviewId}/delete`;
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('viewReviewModal')).show();
+        });
+    });
+    
+    // Delete review button handler
+    const deleteButtons = document.querySelectorAll('.delete-review-btn');
+    const deleteForm = document.getElementById('deleteReviewForm');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.dataset.reviewId;
+            const propertyTitle = this.dataset.propertyTitle;
+            
+            document.getElementById('deleteReviewPropertyTitle').textContent = propertyTitle;
+            deleteForm.action = `/admin/reviews/${reviewId}/delete`;
+            
+            new bootstrap.Modal(document.getElementById('deleteReviewModal')).show();
+        });
+    });
+});
+</script>
+{% endblock %}

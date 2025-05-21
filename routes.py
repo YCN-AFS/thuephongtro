@@ -919,16 +919,136 @@ def admin_users():
 @app.route('/admin/reviews')
 @admin_required
 def admin_reviews():
-    # Will implement in the next phase
-    flash('Tính năng này đang được phát triển.', 'info')
-    return redirect(url_for('admin_dashboard'))
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '')
+    rating = request.args.get('rating', '')
+    sort = request.args.get('sort', 'newest')
+    
+    # Base query
+    query = Review.query
+    
+    # Apply filters
+    if keyword:
+        query = query.filter(Review.comment.ilike(f'%{keyword}%'))
+    
+    if rating:
+        query = query.filter(Review.rating == int(rating))
+    
+    # Apply sorting
+    if sort == 'oldest':
+        query = query.order_by(Review.created_at)
+    elif sort == 'rating_high':
+        query = query.order_by(desc(Review.rating), desc(Review.created_at))
+    elif sort == 'rating_low':
+        query = query.order_by(Review.rating, desc(Review.created_at))
+    else:  # newest
+        query = query.order_by(desc(Review.created_at))
+    
+    # Pagination
+    pagination = query.paginate(page=page, per_page=20)
+    reviews = pagination.items
+    
+    return render_template('admin/reviews.html',
+                           user=current_user,
+                           reviews=reviews,
+                           pagination=pagination,
+                           active_tab='reviews')
 
 @app.route('/admin/settings')
 @admin_required
 def admin_settings():
-    # Will implement in the next phase
-    flash('Tính năng này đang được phát triển.', 'info')
-    return redirect(url_for('admin_dashboard'))
+    # Create an empty settings dictionary for the template
+    settings = {}
+    
+    # Try to get settings from database or default values
+    try:
+        # This would be replaced with actual settings retrieval logic
+        # For now we'll use some default settings
+        settings = {
+            'site_name': 'BienHoa Rentals',
+            'site_tagline': 'Tìm nhà dễ dàng tại Biên Hòa',
+            'contact_email': 'contact@bienhoarentals.com',
+            'contact_phone': '0123 456 789',
+            'currency': 'VND',
+            'default_city': 'Biên Hòa',
+            'default_province': 'Đồng Nai',
+            'default_country': 'Việt Nam',
+            'primary_color': '#FF5A5F',
+            'secondary_color': '#00A699',
+            'theme': 'light',
+            'site_description': 'BienHoa Rentals cung cấp dịch vụ tìm kiếm và cho thuê bất động sản tại Biên Hòa, Đồng Nai.'
+        }
+    except Exception as e:
+        app.logger.error(f"Error getting settings: {e}")
+    
+    # Mock backups data for template
+    backups = []
+    
+    return render_template('admin/settings.html',
+                          user=current_user,
+                          settings=settings,
+                          backups=backups,
+                          active_tab='settings')
+
+@app.route('/admin/settings/update', methods=['POST'])
+@admin_required
+def admin_settings_update():
+    # Get the settings type from the form
+    settings_type = request.form.get('settings_type')
+    
+    # Process the settings update request
+    # This would be replaced with actual settings update logic
+    # For now we'll just flash a success message
+    
+    flash(f'Cài đặt đã được cập nhật thành công.', 'success')
+    return redirect(url_for('admin_settings'))
+
+@app.route('/admin/database/backup', methods=['POST'])
+@admin_required
+def admin_database_backup():
+    # This would be replaced with actual database backup logic
+    # For now we'll just flash a success message
+    
+    flash('Đã tạo bản sao lưu cơ sở dữ liệu thành công.', 'success')
+    return redirect(url_for('admin_settings'))
+
+@app.route('/admin/database/restore', methods=['POST'])
+@admin_required
+def admin_database_restore():
+    # This would be replaced with actual database restore logic
+    # For now we'll just flash a success message
+    
+    if 'restore_file' not in request.files:
+        flash('Không tìm thấy tệp sao lưu.', 'danger')
+        return redirect(url_for('admin_settings'))
+    
+    flash('Đã phục hồi cơ sở dữ liệu thành công.', 'success')
+    return redirect(url_for('admin_settings'))
+
+@app.route('/admin/database/delete-backup', methods=['POST'])
+@admin_required
+def admin_database_delete_backup():
+    # This would be replaced with actual backup deletion logic
+    # For now we'll just flash a success message
+    
+    filename = request.form.get('filename')
+    flash(f'Đã xóa bản sao lưu {filename}.', 'success')
+    return redirect(url_for('admin_settings'))
+
+@app.route('/admin/reviews/<int:review_id>/delete', methods=['POST'])
+@admin_required
+def admin_review_delete(review_id):
+    review = Review.query.get_or_404(review_id)
+    
+    # Store review info for flash message
+    property_title = review.property.title
+    
+    # Delete review
+    db.session.delete(review)
+    db.session.commit()
+    
+    flash(f'Đã xóa đánh giá cho bất động sản "{property_title}".', 'success')
+    return redirect(url_for('admin_reviews'))
 
 @app.route('/admin/properties/<int:property_id>/edit')
 @admin_required

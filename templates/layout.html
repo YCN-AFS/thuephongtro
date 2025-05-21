@@ -61,6 +61,9 @@
                                 {% if user.user_type != 'landlord' %}
                                     <li><a class="dropdown-item" href="{{ url_for('landlord_dashboard') }}">Trở Thành Chủ Nhà</a></li>
                                 {% endif %}
+                                {% if user.user_type == 'admin' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cog me-2"></i> Quản Trị Hệ Thống</a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ url_for('replit_auth.logout') }}">Đăng Xuất</a></li>
                             </ul>
@@ -119,6 +122,9 @@
                             <li><a href="{{ url_for('profile') }}">Hồ Sơ</a></li>
                             {% if user.user_type == 'landlord' %}
                                 <li><a href="{{ url_for('landlord_dashboard') }}">Bảng Điều Khiển</a></li>
+                            {% endif %}
+                            {% if user.user_type == 'admin' %}
+                                <li><a href="{{ url_for('admin_dashboard') }}">Quản Trị Hệ Thống</a></li>
                             {% endif %}
                         {% else %}
                             <li><a href="{{ url_for('replit_auth.login') }}">Đăng Nhập</a></li>
