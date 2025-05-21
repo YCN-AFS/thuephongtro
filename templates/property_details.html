@@ -50,9 +50,7 @@
                     <div class="carousel-inner rounded">
                         {% for image in property.images %}
                             <div class="carousel-item {{ 'active' if loop.first else '' }}">
-                                <div class="property-detail-carousel">
-                                    <div class="carousel-item" style="background-image: url('{{ image.url }}');"></div>
-                                </div>
+                                <img src="{{ image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height: 400px; object-fit: cover; border-radius: 8px;">
                             </div>
                         {% endfor %}
                     </div>
@@ -68,7 +66,7 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="property-detail-image mb-4" style="background-image: url('https://pixabay.com/get/g42f931ecb58762a33b28eea42149ea8048d743915478c2331a5a36343a1a8d9461ed6ed14be306dd5945c24ad347f0d560eddd76f8ca7c0de4c6bab2038fc7b0_1280.jpg');"></div>
+                <div class="property-detail-image mb-4" style="background-image: url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80'); height: 400px; background-position: center; background-size: cover; border-radius: 8px;"></div>
             {% endif %}
 
             <!-- Property Information Tabs -->
