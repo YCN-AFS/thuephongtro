@@ -86,29 +86,29 @@
                             <div class="feature-icon mb-2">
                                 <i class="fas fa-bed"></i>
                             </div>
-                            <p class="mb-0">{{ property.bedrooms }} bed</p>
+                            <p class="mb-0">{{ property.bedrooms }} phòng ngủ</p>
                         </div>
                         <div class="col-4 text-center">
                             <div class="feature-icon mb-2">
                                 <i class="fas fa-bath"></i>
                             </div>
-                            <p class="mb-0">{{ property.bathrooms }} bath</p>
+                            <p class="mb-0">{{ property.bathrooms }} phòng tắm</p>
                         </div>
                     </div>
                     <div class="mt-3">
                         <div class="mb-2">
                             <span class="badge {{ 'bg-success' if property.is_available else 'bg-danger' }} mb-2">
-                                {{ 'Available' if property.is_available else 'Not Available' }}
+                                {{ 'Còn Trống' if property.is_available else 'Đã Thuê' }}
                             </span>
-                            <span class="text-muted ms-2">From {{ property.available_from.strftime('%d %B, %Y') }}</span>
+                            <span class="text-muted ms-2">Từ ngày {{ property.available_from.strftime('%d %B, %Y') }}</span>
                         </div>
                         <div class="mb-2">
                             <i class="fas fa-user me-2 text-muted"></i> 
-                            <span>Posted by {{ property.owner.first_name if property.owner.first_name else 'Owner' }}</span>
+                            <span>Đăng bởi {{ property.owner.first_name if property.owner.first_name else 'Chủ nhà' }}</span>
                         </div>
                         <div>
                             <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                            <span>Posted on {{ property.created_at.strftime('%d %B, %Y') }}</span>
+                            <span>Đăng vào ngày {{ property.created_at.strftime('%d %B, %Y') }}</span>
                         </div>
                     </div>
                 </div>
@@ -118,13 +118,13 @@
             <div class="property-detail-info mb-4">
                 <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Tổng Quan</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Details</button>
+                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Chi Tiết</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Amenities</button>
+                        <button class="nav-link" id="amenities-tab" data-bs-toggle="tab" data-bs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">Tiện Ích</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">Location</button>
