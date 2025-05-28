@@ -40,7 +40,7 @@ Nền tảng cho thuê phòng trọ toàn diện dành cho thành phố Biên H�
 
 ### 1. Clone dự án
 ```bash
-git clone [repository-url]
+git clone https://github.com/YCN-AFS/thuephongtro.git
 cd bienhoa-rentals
 ```
 
@@ -216,8 +216,8 @@ Dự án này được phân phối dưới MIT License. Xem file `LICENSE` đ�
 ## 📧 Liên hệ
 
 - Email: support@bienhoa-rentals.com
-- Website: https://bienhoa-rentals.replit.app
-- GitHub: [Repository Link]
+- Website: 
+- GitHub: https://github.com/YCN-AFS
 
 ## 🙏 Cảm ơn
 
