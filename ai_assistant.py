@@ -102,7 +102,7 @@ def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = Non
         if property_data:
             context += "Dữ liệu bất động sản thực từ hệ thống:\n"
             for i, prop in enumerate(property_data[:8]):  # Show more properties for better recommendations
-                context += f"\nBất động sản {i+1}:\n"
+                context += f"\nBất động sản {i+1} (ID: {prop.get('id')}):\n"
                 context += f"- Tiêu đề: {prop.get('title', 'Không có')}\n"
                 context += f"- Giá: {prop.get('price', 'Không có'):,.0f} VND/tháng\n"
                 context += f"- Địa điểm: {prop.get('district', 'Không có')}, {prop.get('city', 'Biên Hòa')}\n"

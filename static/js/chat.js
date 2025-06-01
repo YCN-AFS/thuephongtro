@@ -143,8 +143,13 @@ class AIChat {
       
       if (data.status === 'success') {
         this.addBotMessage(data.response);
+        
+        // Add property recommendations if available
+        if (data.recommended_properties && data.recommended_properties.length > 0) {
+          this.addPropertyRecommendations(data.recommended_properties);
+        }
       } else {
-        this.addBotMessage('Sorry, I encountered a problem. Please try again later.');
+        this.addBotMessage('Xin lỗi, tôi gặp sự cố. Vui lòng thử lại sau.');
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -240,6 +245,88 @@ class AIChat {
     }
   }
   
+  /**
+   * Add property recommendations with images and view buttons
+   * @param {Array} properties - Array of recommended properties
+   */
+  addPropertyRecommendations(properties) {
+    if (!this.chatMessages || !properties.length) return;
+    
+    const recommendationsElement = document.createElement('div');
+    recommendationsElement.className = 'ai-chat-message bot';
+    
+    const contentElement = document.createElement('div');
+    contentElement.className = 'ai-chat-message-content';
+    
+    const titleElement = document.createElement('div');
+    titleElement.style.fontWeight = 'bold';
+    titleElement.style.marginBottom = '10px';
+    titleElement.textContent = 'Các bất động sản đề xuất:';
+    contentElement.appendChild(titleElement);
+    
+    properties.forEach(property => {
+      const propertyCard = document.createElement('div');
+      propertyCard.className = 'ai-property-card';
+      propertyCard.style.cssText = `
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin: 8px 0;
+        padding: 12px;
+        background: #f9f9f9;
+      `;
+      
+      // Property image
+      if (property.primary_image) {
+        const imageElement = document.createElement('img');
+        imageElement.src = property.primary_image;
+        imageElement.alt = property.title;
+        imageElement.style.cssText = `
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+          border-radius: 6px;
+          margin-bottom: 8px;
+        `;
+        propertyCard.appendChild(imageElement);
+      }
+      
+      // Property info
+      const infoElement = document.createElement('div');
+      infoElement.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 4px;">${property.title}</div>
+        <div style="color: #FF5A5F; font-weight: bold; margin-bottom: 4px;">${property.price.toLocaleString('vi-VN')} VND/tháng</div>
+        <div style="font-size: 12px; color: #666; margin-bottom: 8px;">${property.district}, ${property.city}</div>
+        <div style="font-size: 12px; color: #666;">${property.bedrooms} PN • ${property.bathrooms} PT • ${property.area}m²</div>
+      `;
+      propertyCard.appendChild(infoElement);
+      
+      // View button
+      const viewButton = document.createElement('button');
+      viewButton.textContent = 'Xem chi tiết';
+      viewButton.style.cssText = `
+        background: #FF5A5F;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-top: 8px;
+        width: 100%;
+      `;
+      viewButton.onclick = () => {
+        window.open(`/property/${property.id}`, '_blank');
+      };
+      propertyCard.appendChild(viewButton);
+      
+      contentElement.appendChild(propertyCard);
+    });
+    
+    recommendationsElement.appendChild(contentElement);
+    this.chatMessages.appendChild(recommendationsElement);
+    this.scrollToBottom();
+  }
+
   /**
    * Scroll chat messages to bottom
    */
