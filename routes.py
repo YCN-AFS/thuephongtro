@@ -692,47 +692,51 @@ def ai_assistant():
             # Get AI response
             ai_response = get_ai_response(user_message, property_data, chat_history)
             
-            # Tự động lấy top 3 bất động sản phù hợp nhất để hiển thị với hình ảnh
+            # CHỈ hiển thị đề xuất bất động sản khi người dùng thực sự hỏi về nhà/phòng
             recommended_properties = []
-            try:
-                # Phân tích tin nhắn người dùng để tìm tiêu chí
-                user_message_lower = user_message.lower()
-                
-                # Extract price range from user message
-                max_price = None
-                import re
-                price_matches = re.findall(r'(\d+(?:\.\d+)?)\s*(?:triệu|tr)', user_message_lower)
-                if price_matches:
-                    max_price = float(price_matches[0]) * 1000000
-                
-                # Filter properties based on user criteria
-                filtered_properties = property_data.copy()
-                
-                if max_price:
-                    filtered_properties = [p for p in filtered_properties if p.get('price', 0) <= max_price * 1.2]  # Allow 20% buffer
-                
-                # Ưu tiên phòng trọ nếu người dùng hỏi về phòng trọ
-                if 'phòng trọ' in user_message_lower or 'phòng' in user_message_lower:
-                    room_properties = [p for p in filtered_properties if 'phòng' in p.get('property_type', '').lower() or 'phòng' in p.get('title', '').lower()]
-                    if room_properties:
-                        filtered_properties = room_properties
-                
-                # Get top 3 properties
-                top_properties = filtered_properties[:3]
-                
-                for prop in top_properties:
-                    prop_with_images = dict(prop)
-                    # Get property images
-                    property_obj = Property.query.get(prop.get('id'))
-                    if property_obj and property_obj.images:
-                        prop_with_images['primary_image'] = property_obj.images[0].url
-                    else:
-                        # Use default image if no image available
-                        prop_with_images['primary_image'] = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'
-                    recommended_properties.append(prop_with_images)
+            user_message_lower = user_message.lower()
+            
+            # Kiểm tra xem người dùng có đang hỏi về bất động sản không
+            property_keywords = ['phòng', 'nhà', 'thuê', 'trọ', 'căn hộ', 'chung cư', 'tìm', 'cần', 'muốn', 'triệu', 'tiền', 'giá', 'khu', 'quận', 'tầng', 'diện tích']
+            is_property_related = any(keyword in user_message_lower for keyword in property_keywords)
+            
+            if is_property_related:
+                try:
+                    # Extract price range from user message
+                    max_price = None
+                    import re
+                    price_matches = re.findall(r'(\d+(?:\.\d+)?)\s*(?:triệu|tr)', user_message_lower)
+                    if price_matches:
+                        max_price = float(price_matches[0]) * 1000000
                     
-            except Exception as e:
-                logging.error(f"Error processing recommended properties: {str(e)}")
+                    # Filter properties based on user criteria
+                    filtered_properties = property_data.copy()
+                    
+                    if max_price:
+                        filtered_properties = [p for p in filtered_properties if p.get('price', 0) <= max_price * 1.2]  # Allow 20% buffer
+                    
+                    # Ưu tiên phòng trọ nếu người dùng hỏi về phòng trọ
+                    if 'phòng trọ' in user_message_lower or 'phòng' in user_message_lower:
+                        room_properties = [p for p in filtered_properties if 'phòng' in p.get('property_type', '').lower() or 'phòng' in p.get('title', '').lower()]
+                        if room_properties:
+                            filtered_properties = room_properties
+                    
+                    # Get top 3 properties
+                    top_properties = filtered_properties[:3]
+                    
+                    for prop in top_properties:
+                        prop_with_images = dict(prop)
+                        # Get property images
+                        property_obj = Property.query.get(prop.get('id'))
+                        if property_obj and property_obj.images:
+                            prop_with_images['primary_image'] = property_obj.images[0].url
+                        else:
+                            # Use default image if no image available
+                            prop_with_images['primary_image'] = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'
+                        recommended_properties.append(prop_with_images)
+                        
+                except Exception as e:
+                    logging.error(f"Error processing recommended properties: {str(e)}")
             
             # Save the chat to database if user is logged in
             if current_user.is_authenticated:

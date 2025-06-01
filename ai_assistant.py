@@ -151,7 +151,13 @@ def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = Non
         
     except Exception as e:
         logging.error(f"Error in AI response generation: {str(e)}")
-        return "I'm sorry, but I encountered an error. Please try again later."
+        error_message = str(e)
+        
+        # Handle quota exceeded error
+        if "429" in error_message or "quota" in error_message.lower():
+            return "Xin lỗi, hệ thống AI tạm thời quá tải. Vui lòng thử lại sau vài phút. Trong thời gian này, bạn có thể sử dụng chức năng tìm kiếm để xem các bất động sản có sẵn."
+        
+        return "Xin lỗi, tôi gặp sự cố kỹ thuật. Vui lòng thử lại sau."
 
 
 def get_property_recommendations(preferences: Dict[str, Any], properties: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
