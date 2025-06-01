@@ -542,4 +542,31 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/property.js') }}"></script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script>
+// Initialize carousel properly
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.getElementById('property-carousel');
+    if (carousel) {
+        // Ensure Bootstrap carousel is working
+        const bsCarousel = new bootstrap.Carousel(carousel, {
+            interval: false, // Don't auto-advance
+            wrap: true,
+            touch: true
+        });
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (carousel.closest('.modal') || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return; // Don't interfere with modals or form inputs
+            }
+            
+            if (e.key === 'ArrowLeft') {
+                bsCarousel.prev();
+            } else if (e.key === 'ArrowRight') {
+                bsCarousel.next();
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
