@@ -151,22 +151,32 @@
     </footer>
 
     <!-- AI Chat Widget -->
-    <div class="chat-widget">
-        <div class="chat-button" id="chat-button">
-            <i class="fas fa-comment-dots fa-lg"></i>
-        </div>
-        <div class="chat-window" id="chat-window" style="display: none;">
-            <div class="chat-header">
-                <h5 class="mb-0">Trợ Lý Tìm Nhà Thuê</h5>
-                <button class="close-chat" id="close-chat">&times;</button>
-            </div>
-            <div class="chat-messages" id="chat-messages"></div>
-            <form class="chat-input" id="chat-form">
-                <input type="text" id="chat-input" placeholder="Hỏi về nhà thuê ở Biên Hòa...">
-                <button type="submit">
-                    <i class="fas fa-paper-plane"></i>
+    <div class="ai-chat-widget">
+        <button class="ai-chat-toggle" id="ai-chat-toggle">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="ai-chat-window" id="ai-chat-window">
+            <div class="ai-chat-header">
+                <h5>🏠 Trợ Lý Tìm Nhà AI</h5>
+                <button class="ai-chat-close" id="ai-chat-close">
+                    <i class="fas fa-times"></i>
                 </button>
-            </form>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-chat-message bot">
+                    <div class="ai-chat-message-content">
+                        Xin chào! Tôi là trợ lý AI giúp bạn tìm kiếm nhà thuê hoàn hảo tại Biên Hòa. Hãy cho tôi biết bạn đang tìm loại nhà nào?
+                    </div>
+                </div>
+            </div>
+            <div class="ai-chat-input-container">
+                <form class="ai-chat-form" id="ai-chat-form">
+                    <input type="text" class="ai-chat-input" id="ai-chat-input" placeholder="Ví dụ: Tôi cần căn hộ 2 phòng ngủ giá dưới 10 triệu...">
+                    <button type="submit" class="ai-chat-send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 

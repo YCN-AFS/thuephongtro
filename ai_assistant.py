@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from typing import List, Dict, Any
 import logging
+import re
 
 # Configure Google Generative AI API
 API_KEY = os.environ.get("GEMINI_API_KEY", "")
@@ -20,13 +21,45 @@ generation_config = {
 }
 
 # System prompt for room recommendation
-SYSTEM_PROMPT = """You are a helpful property assistant for a rental platform in Biên Hòa, Vietnam. 
-You help users find suitable rental properties based on their preferences.
-Provide concise, friendly, and informative responses focused on the user's rental needs.
-If asked about specific properties, use the provided property data to give accurate recommendations.
-Do not make up information about properties if it's not in the data provided.
-If the user asks for information outside of rental properties in Biên Hòa, politely redirect them.
-Always maintain a helpful and professional tone."""
+SYSTEM_PROMPT = """Bạn là trợ lý bất động sản thông minh cho nền tảng cho thuê nhà ở Biên Hòa, Việt Nam.
+Nhiệm vụ của bạn:
+1. Giúp người dùng tìm kiếm bất động sản phù hợp dựa trên nhu cầu của họ
+2. Đưa ra các đề xuất cụ thể từ danh sách bất động sản có sẵn
+3. Trả lời bằng tiếng Việt, ngắn gọn và thân thiện
+4. KHÔNG sử dụng markdown, chỉ sử dụng văn bản thuần túy
+5. Khi có dữ liệu bất động sản, hãy đề xuất 2-3 căn phù hợp nhất
+6. Đưa ra thông tin cụ thể: giá, diện tích, số phòng, địa chỉ
+
+Luôn tập trung vào việc giúp tìm nhà và đưa ra lời khuyên hữu ích."""
+
+
+def clean_markdown(text: str) -> str:
+    """Remove markdown formatting from text"""
+    # Remove bold and italic
+    text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
+    text = re.sub(r'\*([^*]+)\*', r'\1', text)
+    text = re.sub(r'__([^_]+)__', r'\1', text)
+    text = re.sub(r'_([^_]+)_', r'\1', text)
+    
+    # Remove headers
+    text = re.sub(r'^#{1,6}\s*([^\n]+)', r'\1', text, flags=re.MULTILINE)
+    
+    # Remove code blocks
+    text = re.sub(r'```[^`]*```', '', text, flags=re.DOTALL)
+    text = re.sub(r'`([^`]+)`', r'\1', text)
+    
+    # Remove links but keep text
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    
+    # Remove bullet points and numbered lists formatting
+    text = re.sub(r'^\s*[-*+]\s+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)
+    
+    # Clean up extra whitespace
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+    text = text.strip()
+    
+    return text
 
 
 def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = None, chat_history: List[Dict[str, str]] = None) -> str:
@@ -55,20 +88,33 @@ def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = Non
         # Prepare context with property data if available
         context = ""
         if property_data:
-            context += "Here's information about available properties:\n"
-            for i, prop in enumerate(property_data[:10]):  # Limit to first 10 properties
-                context += f"\nProperty {i+1}:\n"
-                context += f"- Title: {prop.get('title', 'N/A')}\n"
-                context += f"- Price: {prop.get('price', 'N/A')} VND/month\n"
-                context += f"- Location: {prop.get('district', 'N/A')}, {prop.get('city', 'Biên Hòa')}\n"
-                context += f"- Type: {prop.get('property_type', 'N/A')}\n"
-                context += f"- Bedrooms: {prop.get('bedrooms', 'N/A')}, Bathrooms: {prop.get('bathrooms', 'N/A')}\n"
-                context += f"- Area: {prop.get('area', 'N/A')} m²\n"
+            context += "Thông tin các bất động sản có sẵn:\n"
+            for i, prop in enumerate(property_data[:5]):  # Limit to first 5 properties
+                context += f"\nBất động sản {i+1}:\n"
+                context += f"- Tiêu đề: {prop.get('title', 'Không có')}\n"
+                context += f"- Giá: {prop.get('price', 'Không có'):,.0f} VND/tháng\n"
+                context += f"- Địa điểm: {prop.get('district', 'Không có')}, {prop.get('city', 'Biên Hòa')}\n"
+                context += f"- Loại: {prop.get('property_type', 'Không có')}\n"
+                context += f"- Phòng ngủ: {prop.get('bedrooms', 'Không có')}, Phòng tắm: {prop.get('bathrooms', 'Không có')}\n"
+                context += f"- Diện tích: {prop.get('area', 'Không có')} m²\n"
+                
+                # Format amenities in Vietnamese
                 amenities = []
-                for key, value in prop.get('amenities', {}).items():
-                    if value:
-                        amenities.append(key.replace('_', ' '))
-                context += f"- Amenities: {', '.join(amenities) if amenities else 'N/A'}\n"
+                amenity_translations = {
+                    'has_air_conditioning': 'Điều hòa',
+                    'has_parking': 'Chỗ đỗ xe',
+                    'has_wifi': 'WiFi',
+                    'has_washing_machine': 'Máy giặt',
+                    'has_refrigerator': 'Tủ lạnh',
+                    'has_tv': 'TV',
+                    'has_kitchen': 'Bếp',
+                    'has_balcony': 'Ban công'
+                }
+                
+                for key, value in prop.items():
+                    if key.startswith('has_') and value and key in amenity_translations:
+                        amenities.append(amenity_translations[key])
+                context += f"- Tiện nghi: {', '.join(amenities) if amenities else 'Không có'}\n"
         
         # Initialize chat
         chat = model.start_chat(history=[])
@@ -86,7 +132,10 @@ def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = Non
         
         # Generate response
         response = chat.send_message(context + "\n\n" + user_message if context else user_message)
-        return response.text
+        
+        # Clean up response by removing markdown and formatting
+        cleaned_response = clean_markdown(response.text)
+        return cleaned_response
         
     except Exception as e:
         logging.error(f"Error in AI response generation: {str(e)}")
