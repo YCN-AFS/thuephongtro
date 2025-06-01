@@ -31,14 +31,17 @@ QUY TắC QUAN TRỌNG:
 - KHÔNG sử dụng markdown
 - Tối đa 2-3 câu cho mỗi phản hồi
 
-Khi người dùng nói về nhu cầu cụ thể (giá, loại nhà, vị trí), hãy:
-1. Tóm tắt nhu cầu của họ
-2. Đề xuất 2-3 bất động sản phù hợp nhất từ danh sách
-3. Chỉ hỏi thêm nếu thông tin còn mơ hồ
+BƯỚC XỬ LÝ THÔNG TIN:
+1. ĐỌC KỸ tin nhắn người dùng để tìm: giá thuê, loại nhà, khu vực
+2. TÌM KIẾM trong dữ liệu bất động sản những căn phù hợp
+3. ĐƯA RA đề xuất CỤ THỂ với tên, giá, địa chỉ
+4. CHỈ hỏi thêm nếu thông tin hoàn toàn không đủ
 
-Ví dụ tốt: "Dựa trên nhu cầu phòng trọ 5 triệu của bạn, tôi đề xuất: Phòng trọ tại Trảng Dài - 4.5 triệu/tháng, 25m², có điều hòa và WiFi."
+VÍ DỤ ĐÚNG: 
+- Input: "tôi cần phòng trọ 5 triệu"
+- Output: "Tôi tìm thấy 2 phòng phù hợp: Phòng trọ Trảng Dài 4.5 triệu/tháng, 25m². Căn hộ mini Tân Phong 5 triệu/tháng, 30m²."
 
-Ví dụ XẤU: "Để tôi có thể hỗ trợ bạn tốt nhất, bạn có thể cho tôi biết thêm về..."
+VÍ DỤ SAI: "Bạn muốn tìm phòng ở khu vực nào?" (KHI ĐÃ NÓI RÕ 5 TRIỆU)
 """
 
 
@@ -97,8 +100,8 @@ def get_ai_response(user_message: str, property_data: List[Dict[Any, Any]] = Non
         # Prepare context with property data if available
         context = ""
         if property_data:
-            context += "Thông tin các bất động sản có sẵn:\n"
-            for i, prop in enumerate(property_data[:5]):  # Limit to first 5 properties
+            context += "Dữ liệu bất động sản thực từ hệ thống:\n"
+            for i, prop in enumerate(property_data[:8]):  # Show more properties for better recommendations
                 context += f"\nBất động sản {i+1}:\n"
                 context += f"- Tiêu đề: {prop.get('title', 'Không có')}\n"
                 context += f"- Giá: {prop.get('price', 'Không có'):,.0f} VND/tháng\n"

@@ -666,43 +666,17 @@ def ai_assistant():
             data = request.json
             user_message = data.get('message', '') if data else ''
             
-            # Get property recommendations if available
+            # LUÔN lấy dữ liệu bất động sản thực từ database để AI có thể đưa ra đề xuất cụ thể
             property_data = []
-            if current_user.is_authenticated:
-                search_params = data.get('search_params', {}) if data else {}
-                if search_params:
-                    # Query properties based on search parameters
-                    query = Property.query.filter(Property.is_available == True)
-                    
-                    district = search_params.get('district')
-                    if district:
-                        query = query.filter(Property.district == district)
-                    
-                    min_price = search_params.get('min_price')
-                    if min_price:
-                        query = query.filter(Property.price >= float(min_price))
-                    
-                    max_price = search_params.get('max_price')
-                    if max_price:
-                        query = query.filter(Property.price <= float(max_price))
-                    
-                    bedrooms = search_params.get('bedrooms')
-                    if bedrooms:
-                        query = query.filter(Property.bedrooms >= int(bedrooms))
-                    
-                    property_type = search_params.get('property_type')
-                    if property_type:
-                        query = query.filter(Property.property_type == property_type)
-                    
-                    # Get properties for AI recommendations
-                    matching_properties = query.order_by(desc(Property.created_at)).limit(10).all()
-                    property_data = [prop.to_dict() for prop in matching_properties]
-                else:
-                    # Get recent properties
-                    recent_properties = Property.query.filter(Property.is_available == True)\
-                        .order_by(desc(Property.created_at))\
-                        .limit(10).all()
-                    property_data = [prop.to_dict() for prop in recent_properties]
+            
+            # Lấy tất cả bất động sản có sẵn để AI phân tích và đề xuất
+            all_properties = Property.query.filter(Property.is_available == True)\
+                .order_by(desc(Property.created_at))\
+                .limit(20).all()  # Lấy 20 bất động sản gần nhất
+            property_data = [prop.to_dict() for prop in all_properties]
+            
+            # Nếu có search_params, AI sẽ sử dụng để lọc trong logic của nó
+            search_params = data.get('search_params', {}) if data else {}
             
             # Get previous chat history
             chat_history = []
