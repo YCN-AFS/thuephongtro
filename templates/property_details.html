@@ -46,27 +46,40 @@
         <div class="col-lg-8">
             <!-- Property Images -->
             {% if property.images %}
-                <div id="property-carousel" class="carousel slide mb-4">
-                    <div class="carousel-inner rounded">
+                <div id="custom-image-viewer" class="position-relative mb-4">
+                    <div class="image-container" style="height: 400px; border-radius: 8px; overflow: hidden; background: #f8f9fa;">
                         {% for image in property.images %}
-                            <div class="carousel-item {{ 'active' if loop.first else '' }}">
-                                <img src="{{ image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height: 400px; object-fit: cover; border-radius: 8px;">
-                                <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); border-radius: 4px; padding: 8px;">
-                                    <span class="badge bg-light text-dark">{{ loop.index }} / {{ property.images|length }}</span>
-                                </div>
-                            </div>
+                            <img id="image-{{ loop.index0 }}" src="{{ image.url }}" 
+                                 class="property-image {{ 'active' if loop.first else '' }}" 
+                                 alt="{{ property.title }}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; display: {{ 'block' if loop.first else 'none' }};">
                         {% endfor %}
                     </div>
                     
                     {% if property.images|length > 1 %}
-                        <button class="carousel-control-prev" type="button" data-bs-target="#property-carousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
+                        <!-- Navigation buttons -->
+                        <button id="prev-btn" class="btn btn-dark position-absolute top-50 start-0 translate-middle-y ms-3" style="z-index: 10; opacity: 0.8;">
+                            <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#property-carousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
+                        <button id="next-btn" class="btn btn-dark position-absolute top-50 end-0 translate-middle-y me-3" style="z-index: 10; opacity: 0.8;">
+                            <i class="fas fa-chevron-right"></i>
                         </button>
+                        
+                        <!-- Image counter -->
+                        <div class="position-absolute bottom-0 end-0 me-3 mb-3">
+                            <span id="image-counter" class="badge bg-dark bg-opacity-75">1 / {{ property.images|length }}</span>
+                        </div>
+                        
+                        <!-- Thumbnail navigation -->
+                        <div class="d-flex justify-content-center mt-3 gap-2">
+                            {% for image in property.images %}
+                                <img src="{{ image.url }}" 
+                                     class="thumbnail-img {{ 'active' if loop.first else '' }}" 
+                                     data-index="{{ loop.index0 }}"
+                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid {{ '#FF5A5F' if loop.first else 'transparent' }};"
+                                     alt="Thumbnail {{ loop.index }}">
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
             {% else %}
@@ -547,32 +560,85 @@
 <script src="{{ url_for('static', filename='js/property.js') }}"></script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script>
-// Simple carousel initialization without indicators
+// Custom image viewer functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Let Bootstrap handle carousel automatically with data attributes only
-    // No manual initialization needed - this prevents the indicators error
+    const imageViewer = document.getElementById('custom-image-viewer');
+    if (!imageViewer) return;
     
-    // Add keyboard navigation for carousel
-    const carousel = document.getElementById('property-carousel');
-    if (carousel) {
-        document.addEventListener('keydown', function(e) {
-            if (document.activeElement.tagName === 'INPUT' || 
-                document.activeElement.tagName === 'TEXTAREA' ||
-                e.target.closest('.modal')) {
-                return; // Don't interfere with form inputs or modals
-            }
-            
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                const prevBtn = carousel.querySelector('.carousel-control-prev');
-                if (prevBtn) prevBtn.click();
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                const nextBtn = carousel.querySelector('.carousel-control-next');
-                if (nextBtn) nextBtn.click();
-            }
-        });
+    const images = imageViewer.querySelectorAll('.property-image');
+    const thumbnails = imageViewer.querySelectorAll('.thumbnail-img');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const counter = document.getElementById('image-counter');
+    
+    let currentIndex = 0;
+    const totalImages = images.length;
+    
+    function showImage(index) {
+        // Hide all images
+        images.forEach(img => img.style.display = 'none');
+        thumbnails.forEach(thumb => thumb.style.border = '2px solid transparent');
+        
+        // Show current image
+        if (images[index]) {
+            images[index].style.display = 'block';
+        }
+        
+        // Highlight current thumbnail
+        if (thumbnails[index]) {
+            thumbnails[index].style.border = '2px solid #FF5A5F';
+        }
+        
+        // Update counter
+        if (counter) {
+            counter.textContent = `${index + 1} / ${totalImages}`;
+        }
+        
+        currentIndex = index;
     }
+    
+    function nextImage() {
+        const newIndex = (currentIndex + 1) % totalImages;
+        showImage(newIndex);
+    }
+    
+    function prevImage() {
+        const newIndex = (currentIndex - 1 + totalImages) % totalImages;
+        showImage(newIndex);
+    }
+    
+    // Navigation button events
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextImage);
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', prevImage);
+    }
+    
+    // Thumbnail click events
+    thumbnails.forEach((thumb, index) => {
+        thumb.addEventListener('click', () => {
+            showImage(index);
+        });
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (document.activeElement.tagName === 'INPUT' || 
+            document.activeElement.tagName === 'TEXTAREA' ||
+            e.target.closest('.modal')) {
+            return;
+        }
+        
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevImage();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextImage();
+        }
+    });
 });
 </script>
 {% endblock %}
