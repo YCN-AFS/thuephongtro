@@ -46,20 +46,14 @@
         <div class="col-lg-8">
             <!-- Property Images -->
             {% if property.images %}
-                <div id="property-carousel" class="carousel slide mb-4" data-bs-ride="carousel">
-                    <!-- Carousel indicators -->
-                    {% if property.images|length > 1 %}
-                        <div class="carousel-indicators">
-                            {% for image in property.images %}
-                                <button type="button" data-bs-target="#property-carousel" data-bs-slide-to="{{ loop.index0 }}" class="{{ 'active' if loop.first else '' }}" aria-current="{{ 'true' if loop.first else 'false' }}" aria-label="Slide {{ loop.index }}"></button>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    
+                <div id="property-carousel" class="carousel slide mb-4">
                     <div class="carousel-inner rounded">
                         {% for image in property.images %}
                             <div class="carousel-item {{ 'active' if loop.first else '' }}">
                                 <img src="{{ image.url }}" class="d-block w-100" alt="{{ property.title }}" style="height: 400px; object-fit: cover; border-radius: 8px;">
+                                <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); border-radius: 4px; padding: 8px;">
+                                    <span class="badge bg-light text-dark">{{ loop.index }} / {{ property.images|length }}</span>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -553,41 +547,31 @@
 <script src="{{ url_for('static', filename='js/property.js') }}"></script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script>
-// Initialize carousel properly
+// Simple carousel initialization without indicators
 document.addEventListener('DOMContentLoaded', function() {
+    // Let Bootstrap handle carousel automatically with data attributes only
+    // No manual initialization needed - this prevents the indicators error
+    
+    // Add keyboard navigation for carousel
     const carousel = document.getElementById('property-carousel');
     if (carousel) {
-        // Wait for Bootstrap to load
-        setTimeout(() => {
-            try {
-                // Ensure Bootstrap carousel is working with proper error handling
-                const bsCarousel = new bootstrap.Carousel(carousel, {
-                    interval: false, // Don't auto-advance
-                    wrap: true,
-                    touch: true,
-                    ride: false // Disable auto-start
-                });
-                
-                // Add keyboard navigation
-                document.addEventListener('keydown', function(e) {
-                    if (carousel.closest('.modal') || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                        return; // Don't interfere with modals or form inputs
-                    }
-                    
-                    if (e.key === 'ArrowLeft') {
-                        e.preventDefault();
-                        bsCarousel.prev();
-                    } else if (e.key === 'ArrowRight') {
-                        e.preventDefault();
-                        bsCarousel.next();
-                    }
-                });
-            } catch (error) {
-                console.warn('Carousel initialization error:', error);
-                // Fallback: use data attributes only
-                carousel.setAttribute('data-bs-ride', 'false');
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement.tagName === 'INPUT' || 
+                document.activeElement.tagName === 'TEXTAREA' ||
+                e.target.closest('.modal')) {
+                return; // Don't interfere with form inputs or modals
             }
-        }, 100);
+            
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevBtn = carousel.querySelector('.carousel-control-prev');
+                if (prevBtn) prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const nextBtn = carousel.querySelector('.carousel-control-next');
+                if (nextBtn) nextBtn.click();
+            }
+        });
     }
 });
 </script>
