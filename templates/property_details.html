@@ -66,7 +66,7 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="property-detail-image mb-4" style="background-image: url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80'); height: 400px; background-position: center; background-size: cover; border-radius: 8px;"></div>
+                <div class="property-detail-image mb-4" style="background-image: url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80'); height: 400px; background-position: center; background-size: cover; border-radius: 8px;"></div>
             {% endif %}
 
             <!-- Property Information Tabs -->
@@ -367,7 +367,7 @@
                     {% for prop in similar_properties %}
                         <div class="col-md-6">
                             <div class="property-card">
-                                <div class="property-image" style="background-image: url('{{ prop.images[0].url if prop.images else '/static/img/properties/default-property-1.jpg' }}');">
+                                <div class="property-image" style="background-image: url('{{ prop.images[0].url if prop.images else 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80' }}');">
                                     <div class="property-price">{{ "{:,.0f}".format(prop.price) }} VND/month</div>
                                 </div>
                                 <div class="property-info">

@@ -27,11 +27,18 @@ app.register_blueprint(google_auth, url_prefix="")
 def make_session_permanent():
     session.permanent = True
 
-# Default stock images
+# Default stock images - using Unsplash for reliable image sources
 STOCK_IMAGES = [
-    "/static/img/properties/default-property-1.jpg",
-    "/static/img/properties/default-property-2.jpg",
-    "/static/img/properties/default-property-3.jpg"
+    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",  # Modern house
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",  # Apartment
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",  # Room interior
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",     # Cozy room
+    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",  # Kitchen
+    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80",  # Bedroom
+    "https://images.unsplash.com/photo-1615529328331-f8917597711f?w=800&q=80",  # Living room
+    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",  # Studio apartment
+    "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&q=80",  # Modern kitchen
+    "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&q=80",  # Bathroom
 ]
 
 # Home page
