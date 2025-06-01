@@ -143,7 +143,7 @@ def property_details(property_id):
             reviewer_id=current_user.id
         ).first()
     
-    return render_template('property_details_new.html', 
+    return render_template('property_details.html', 
                            property=property,
                            is_favorite=is_favorite,
                            more_from_owner=more_from_owner,
