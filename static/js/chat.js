@@ -4,12 +4,12 @@
 
 class AIChat {
   constructor() {
-    this.chatButton = document.getElementById('chat-button');
-    this.chatWindow = document.getElementById('chat-window');
-    this.chatMessages = document.getElementById('chat-messages');
-    this.chatInput = document.getElementById('chat-input');
-    this.chatForm = document.getElementById('chat-form');
-    this.closeChat = document.getElementById('close-chat');
+    this.chatToggle = document.getElementById('ai-chat-toggle');
+    this.chatWindow = document.getElementById('ai-chat-window');
+    this.chatMessages = document.getElementById('ai-chat-messages');
+    this.chatInput = document.getElementById('ai-chat-input');
+    this.chatForm = document.getElementById('ai-chat-form');
+    this.chatClose = document.getElementById('ai-chat-close');
     this.isOpen = false;
     this.isLoading = false;
     this.searchParams = {};
@@ -21,12 +21,12 @@ class AIChat {
    * Initialize event listeners for chat functionality
    */
   initEventListeners() {
-    if (this.chatButton) {
-      this.chatButton.addEventListener('click', () => this.toggleChat());
+    if (this.chatToggle) {
+      this.chatToggle.addEventListener('click', () => this.toggleChat());
     }
     
-    if (this.closeChat) {
-      this.closeChat.addEventListener('click', () => this.toggleChat());
+    if (this.chatClose) {
+      this.chatClose.addEventListener('click', () => this.closeChat());
     }
     
     if (this.chatForm) {
@@ -82,11 +82,6 @@ class AIChat {
     
     this.chatWindow.style.display = 'flex';
     this.isOpen = true;
-    
-    // Add welcome message if chat is empty
-    if (this.chatMessages && this.chatMessages.children.length === 0) {
-      this.addBotMessage(`Hello! I'm your AI assistant for finding the perfect rental in Biên Hòa. How can I help you today?`);
-    }
     
     // Focus input field
     if (this.chatInput) {
@@ -171,9 +166,13 @@ class AIChat {
     if (!this.chatMessages) return;
     
     const messageElement = document.createElement('div');
-    messageElement.className = 'message user-message';
-    messageElement.textContent = message;
+    messageElement.className = 'ai-chat-message user';
     
+    const contentElement = document.createElement('div');
+    contentElement.className = 'ai-chat-message-content';
+    contentElement.textContent = message;
+    
+    messageElement.appendChild(contentElement);
     this.chatMessages.appendChild(messageElement);
     this.scrollToBottom();
   }
@@ -186,11 +185,16 @@ class AIChat {
     if (!this.chatMessages) return;
     
     const messageElement = document.createElement('div');
-    messageElement.className = 'message bot-message';
+    messageElement.className = 'ai-chat-message bot';
+    
+    const contentElement = document.createElement('div');
+    contentElement.className = 'ai-chat-message-content';
     
     // Support for line breaks
     const formattedMessage = message.replace(/\n/g, '<br>');
-    messageElement.innerHTML = formattedMessage;
+    contentElement.innerHTML = formattedMessage;
+    
+    messageElement.appendChild(contentElement);
     
     this.chatMessages.appendChild(messageElement);
     this.scrollToBottom();
@@ -203,10 +207,25 @@ class AIChat {
     if (!this.chatMessages) return;
     
     const loadingElement = document.createElement('div');
-    loadingElement.className = 'message bot-message loading-message';
-    loadingElement.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    loadingElement.className = 'ai-chat-message bot';
     loadingElement.id = 'loading-indicator';
     
+    const contentElement = document.createElement('div');
+    contentElement.className = 'ai-chat-message-content';
+    
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'ai-chat-loading';
+    loadingDiv.innerHTML = `
+      <span>Đang suy nghĩ</span>
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    `;
+    
+    contentElement.appendChild(loadingDiv);
+    loadingElement.appendChild(contentElement);
     this.chatMessages.appendChild(loadingElement);
     this.scrollToBottom();
   }
