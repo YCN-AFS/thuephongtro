@@ -47,6 +47,15 @@
             <!-- Property Images -->
             {% if property.images %}
                 <div id="property-carousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                    <!-- Carousel indicators -->
+                    {% if property.images|length > 1 %}
+                        <div class="carousel-indicators">
+                            {% for image in property.images %}
+                                <button type="button" data-bs-target="#property-carousel" data-bs-slide-to="{{ loop.index0 }}" class="{{ 'active' if loop.first else '' }}" aria-current="{{ 'true' if loop.first else 'false' }}" aria-label="Slide {{ loop.index }}"></button>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
                     <div class="carousel-inner rounded">
                         {% for image in property.images %}
                             <div class="carousel-item {{ 'active' if loop.first else '' }}">
@@ -54,6 +63,7 @@
                             </div>
                         {% endfor %}
                     </div>
+                    
                     {% if property.images|length > 1 %}
                         <button class="carousel-control-prev" type="button" data-bs-target="#property-carousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -547,25 +557,37 @@
 document.addEventListener('DOMContentLoaded', function() {
     const carousel = document.getElementById('property-carousel');
     if (carousel) {
-        // Ensure Bootstrap carousel is working
-        const bsCarousel = new bootstrap.Carousel(carousel, {
-            interval: false, // Don't auto-advance
-            wrap: true,
-            touch: true
-        });
-        
-        // Add keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            if (carousel.closest('.modal') || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                return; // Don't interfere with modals or form inputs
+        // Wait for Bootstrap to load
+        setTimeout(() => {
+            try {
+                // Ensure Bootstrap carousel is working with proper error handling
+                const bsCarousel = new bootstrap.Carousel(carousel, {
+                    interval: false, // Don't auto-advance
+                    wrap: true,
+                    touch: true,
+                    ride: false // Disable auto-start
+                });
+                
+                // Add keyboard navigation
+                document.addEventListener('keydown', function(e) {
+                    if (carousel.closest('.modal') || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                        return; // Don't interfere with modals or form inputs
+                    }
+                    
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        bsCarousel.prev();
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        bsCarousel.next();
+                    }
+                });
+            } catch (error) {
+                console.warn('Carousel initialization error:', error);
+                // Fallback: use data attributes only
+                carousel.setAttribute('data-bs-ride', 'false');
             }
-            
-            if (e.key === 'ArrowLeft') {
-                bsCarousel.prev();
-            } else if (e.key === 'ArrowRight') {
-                bsCarousel.next();
-            }
-        });
+        }, 100);
     }
 });
 </script>
