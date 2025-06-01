@@ -696,9 +696,14 @@ def ai_assistant():
             recommended_properties = []
             user_message_lower = user_message.lower()
             
-            # Kiểm tra xem người dùng có đang hỏi về bất động sản không
-            property_keywords = ['phòng', 'nhà', 'thuê', 'trọ', 'căn hộ', 'chung cư', 'tìm', 'cần', 'muốn', 'triệu', 'tiền', 'giá', 'khu', 'quận', 'tầng', 'diện tích']
-            is_property_related = any(keyword in user_message_lower for keyword in property_keywords)
+            # Kiểm tra xem người dùng có đang YÊU CẦU tìm kiếm bất động sản không (chỉ khi có từ khóa hành động)
+            search_keywords = ['tìm', 'cần', 'muốn thuê', 'có phòng', 'cho tôi', 'giới thiệu', 'gợi ý', 'có không', 'ở đâu', 'bên nào']
+            property_keywords = ['phòng', 'nhà', 'thuê', 'trọ', 'căn hộ', 'chung cư']
+            
+            # CHỈ hiển thị đề xuất nếu có từ khóa hành động + từ khóa bất động sản
+            has_search_intent = any(keyword in user_message_lower for keyword in search_keywords)
+            has_property_keywords = any(keyword in user_message_lower for keyword in property_keywords)
+            is_property_related = has_search_intent and has_property_keywords
             
             if is_property_related:
                 try:
