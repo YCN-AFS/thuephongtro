@@ -721,8 +721,12 @@ def ai_assistant():
                         if room_properties:
                             filtered_properties = room_properties
                     
-                    # Get top 3 properties
-                    top_properties = filtered_properties[:3]
+                    # Shuffle để tránh hiển thị cùng những bất động sản mỗi lần
+                    import random
+                    random.shuffle(filtered_properties)
+                    
+                    # Get top 2 properties instead of 3 to avoid repetition with limited data
+                    top_properties = filtered_properties[:2]
                     
                     for prop in top_properties:
                         prop_with_images = dict(prop)
