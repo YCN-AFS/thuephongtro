@@ -197,7 +197,7 @@
                                         </tr>
                                         <tr>
                                             <th>Listed On</th>
-                                            <td>{{ property.created_at.strftime('%d %B, %Y') }}</td>
+                                            <td>{{ property.created_at.strftime('%d %B, %Y') if property.created_at else 'N/A' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
